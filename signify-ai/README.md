@@ -147,4 +147,40 @@ NODE_ENV=development
 
 ---
 
+## 🔌 Add-on Modules: How to Enable and Disable
+
+SIGNIFY AI includes an isolated, zero-disturbance add-on layer bringing three smart features:
+1. **Module 0: Auth & Role-Based Access** (Teacher / Student roles, JWT authentication, 6-character classroom join codes).
+2. **Module 1: Tone & Emphasis Captions** (AI & rule-based emotion/emphasis tags: `EXAM_POINT`, `EMPHASIS`, `DEFINITION`, `QUESTION`, `NEW_TOPIC`, `HOMEWORK`).
+3. **Module 2: Alerts & Vibration** (Name detection with phonetic matching, Emergency teacher broadcast, `navigator.vibrate` & audio/visual flash fallback).
+
+### Feature Flags
+
+To enable or disable the add-on layer, set the environment variables in `server/.env` and `.env`:
+
+```bash
+# Enable all add-on modules (default: false for core compatibility)
+ADDON_AUTH=true
+ADDON_EMPHASIS=true
+ADDON_ALERTS=true
+JWT_SECRET=your_secure_jwt_secret
+
+VITE_ADDON_AUTH=true
+VITE_ADDON_EMPHASIS=true
+VITE_ADDON_ALERTS=true
+```
+
+To completely disable the add-on layer, set all `ADDON_*` and `VITE_ADDON_*` flags to `false`. With all flags disabled, SIGNIFY AI behaves exactly as the baseline core app without executing any add-on code.
+
+---
+
+## ⚠️ Known Limitations
+
+1. **Browser Vibration Support**: `navigator.vibrate` is supported on Android Chrome and Firefox Mobile, but is restricted or unsupported on iOS Safari, macOS, and desktop Webkit browsers. On unsupported devices, SIGNIFY AI automatically falls back to full-screen visual banners, screen pulses (respecting `prefers-reduced-motion`), and `/notification.wav` audio alerts.
+2. **Speech Recognition Name Mishearings**: Speech-to-text engines frequently mishear names (e.g. "Praveen" misheard as "Parveen" or "Pravin"). SIGNIFY AI addresses this using Levenshtein distance combined with Double Metaphone phonetic matching across student registered names and nicknames, enforcing a 20-second cooldown per student.
+3. **Microphone Permissions**: Web Speech API requires explicit browser microphone permissions. If denied, users can click **"Try Demo"** to run the full simulation.
+
+---
+
 ## Team: **Unstoppable** | GitHub DevDays Hackathon 2026
+

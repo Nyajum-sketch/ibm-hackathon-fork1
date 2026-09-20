@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AudioLines, Menu, X, Radio } from 'lucide-react';
 import { useCaptionStore } from '../../store/useCaptionStore';
+import { AddonNavbarEntry } from '../../addons';
 
 export default function Navbar() {
   const { isListening } = useCaptionStore();
@@ -32,7 +33,7 @@ export default function Navbar() {
           </NavLink>
 
           {/* Desktop Nav - Only show on Landing since Sidebar handles the rest */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             {location.pathname === '/' && (
               <div className="flex gap-1">
               {navItems.map((item) => {
@@ -68,6 +69,9 @@ export default function Navbar() {
                 <span>Recording Live</span>
               </div>
             )}
+
+            {/* Addon Entry Point */}
+            <AddonNavbarEntry />
           </div>
 
           {/* Mobile menu button */}
@@ -122,6 +126,9 @@ export default function Navbar() {
                   <span>Recording Live</span>
                 </div>
               )}
+              <div className="pt-2 border-t border-border-subtle px-4">
+                <AddonNavbarEntry />
+              </div>
             </div>
           </motion.div>
         )}

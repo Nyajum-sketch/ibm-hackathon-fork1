@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useCaptionStore } from '../store/useCaptionStore';
 import { useLectureStore } from '../store/useLectureStore';
+import { dispatchCaptionFinalized } from '../addons';
 
 const SAMPLE_LECTURE_TEXT = 
   "Welcome class. Today we are going to study React components and how we manage local state using hooks. " +
@@ -68,6 +69,16 @@ export function useSpeechRecognition() {
 
       if (final) {
         actions.addFinalLine(final);
+        // Non-blocking add-on caption hook
+        try {
+          dispatchCaptionFinalized({
+            text: final,
+            timestamp: Date.now(),
+            sessionId: useCaptionStore.getState().sessionId
+          });
+        } catch (e) {
+          // Fail silently
+        }
       }
     };
 
@@ -255,6 +266,13 @@ export function useSpeechRecognition() {
       if (word.endsWith('.') || word.endsWith('?') || word.endsWith('!')) {
         const sentence = currentSentenceRef.current.join(' ');
         actions.addFinalLine(sentence);
+        try {
+          dispatchCaptionFinalized({
+            text: sentence,
+            timestamp: Date.now(),
+            sessionId: useCaptionStore.getState().sessionId
+          });
+        } catch (e) {}
         currentSentenceRef.current = [];
       }
     }, 280); // Roughly 200 words per minute

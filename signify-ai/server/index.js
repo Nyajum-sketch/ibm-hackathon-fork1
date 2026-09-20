@@ -6,6 +6,7 @@ import { sessionsLimiter } from './middleware/rateLimit.js';
 import healthRoute from './routes/health.js';
 import groqRoute from './routes/groq.js';
 import sessionsRoute from './routes/sessions.js';
+import addonsRoute from './addons/index.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -21,6 +22,7 @@ app.use('/api/', apiLimiter);
 app.use('/api/health', healthRoute);
 app.use('/api/groq', groqRoute);
 app.use('/api/sessions', sessionsLimiter, sessionsRoute);
+app.use('/api/addons', addonsRoute);
 
 // Basic 404 handler
 app.use((req, res, next) => {

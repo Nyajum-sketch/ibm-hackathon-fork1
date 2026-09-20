@@ -15,6 +15,7 @@ import AskAI from '../components/ai/AskAI';
 import { useGroqAI } from '../hooks/useGroqAI';
 import SoundHapticIndicator from '../components/classroom/SoundHapticIndicator';
 import AslGrammarBridge from '../components/classroom/AslGrammarBridge';
+import { StudentSessionBanner } from '../addons';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Modal from '../components/ui/Modal';
@@ -194,6 +195,9 @@ export default function Classroom() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6 h-[calc(100vh-4rem)]">
       
+      {/* Student Session Access & Join Code space */}
+      <StudentSessionBanner />
+
       {/* JUDGES' FEATURE 1: Acoustic Sound & Haptic Notification Bar */}
       <SoundHapticIndicator isListening={isListening} />
 

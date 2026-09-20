@@ -4,9 +4,11 @@ import { useSettingsStore } from '../../store/useSettingsStore';
 import Badge from '../ui/Badge';
 import { Mic, MicOff } from 'lucide-react';
 import ImportanceBadge from './ImportanceBadge';
+import { useAddons, EmphasisBadge } from '../../addons';
 
 export default function LiveCaptionPanel() {
   const { finalTranscript, interimText, translatedLines, isListening } = useCaptionStore();
+  const { sessionTags } = useAddons();
   const { 
     captionFontSize, 
     autoTranslate, 
@@ -109,8 +111,14 @@ export default function LiveCaptionPanel() {
           <div className={currentSpacingClass}>
             {finalTranscript.map((line, index) => {
               const isLast = index === finalTranscript.length - 1 && !interimText;
+              const matchingTag = sessionTags.find(t => t.text && line.includes(t.text));
               return (
                 <div key={index} className="space-y-2 border-l-2 border-transparent hover:border-accent-coral/10 pl-3 transition-all">
+                  {matchingTag && (
+                    <div className="mb-1">
+                      <EmphasisBadge tag={matchingTag} />
+                    </div>
+                  )}
                   {/* Original Sentence */}
                   <p className={`font-semibold tracking-wide transition-colors duration-300 ${currentFontSizeClass} ${
                     isLast ? textPrimaryColor : textSecondaryColor
