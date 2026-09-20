@@ -5,6 +5,7 @@ const translationCache = new Map();
 
 // Supported languages list with flag emojis
 export const SUPPORTED_LANGUAGES = [
+  { code: 'en', name: 'English (Default)', flag: '🇺🇸' },
   { code: 'es', name: 'Spanish', flag: '🇪🇸' },
   { code: 'ta', name: 'Tamil', flag: '🇮🇳' },
   { code: 'hi', name: 'Hindi', flag: '🇮🇳' },

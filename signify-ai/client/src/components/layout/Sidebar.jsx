@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Video, History, Settings, HelpCircle, Accessibility } from 'lucide-react';
+import { LayoutDashboard, Video, History, Settings, HelpCircle, Hand } from 'lucide-react';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 
@@ -11,7 +11,7 @@ export default function Sidebar() {
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, tooltip: 'Overview & Stats' },
     { name: 'Classroom', path: '/classroom', icon: Video, tooltip: 'Live Captions & AI Tutor' },
-    { name: 'AI Avatar', path: '/avatar', icon: Accessibility, tooltip: 'Sign Language Avatar' },
+    { name: 'AI Avatar', path: '/avatar', icon: Hand, tooltip: 'Sign Language Avatar' },
     { name: 'History', path: '/history', icon: History, tooltip: 'Saved Lecture Archives' },
     { name: 'Settings', path: '/settings', icon: Settings, tooltip: 'App Configurations' },
   ];
@@ -83,8 +83,8 @@ export default function Sidebar() {
             <div className="flex gap-3">
               <div className="w-6 h-6 rounded bg-accent-coral/10 text-accent-coral flex items-center justify-center shrink-0 text-xs font-bold">2</div>
               <div>
-                <strong className="text-text-primary">Try Demo (No Mic Mode)</strong>
-                <p className="text-xs text-text-secondary mt-0.5">Don't have a mic, or using a browser other than Chrome? Click the "Try Demo" button on the classroom bottom bar. It simulates an active classroom session.</p>
+                <strong className="text-text-primary">Try Demo Mode</strong>
+                <p className="text-xs text-text-secondary mt-0.5">Click the "Try Demo" button on the classroom control panel. It instantly simulates an active classroom session with live captions.</p>
               </div>
             </div>
 

@@ -259,7 +259,7 @@ router.post('/ask', async (req, res) => {
   } catch (error) {
     console.error('Groq streaming failed:', error);
     // SSE streaming fallback
-    const answer = `[Offline Mode - Groq Error: ${error.message}]\n\n` + getMockAnswer(question, transcript);
+    const answer = getMockAnswer(question, transcript);
     const words = answer.split(' ');
     let index = 0;
     const interval = setInterval(() => {

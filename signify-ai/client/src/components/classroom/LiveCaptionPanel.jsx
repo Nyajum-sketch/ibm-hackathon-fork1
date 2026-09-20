@@ -19,6 +19,7 @@ export default function LiveCaptionPanel() {
 
   // Map settings font-size key to Tailwind styles
   const fontSizes = {
+    sm: 'text-xl md:text-2xl leading-normal',
     md: 'text-2xl md:text-3xl leading-relaxed',
     lg: 'text-3xl md:text-4xl leading-relaxed',
     xl: 'text-4xl md:text-5xl leading-relaxed',
@@ -58,7 +59,7 @@ export default function LiveCaptionPanel() {
       {/* Panel Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle bg-bg-surface/50 backdrop-blur-sm z-10">
         <div className="flex items-center gap-3">
-          <h2 className="font-bold text-text-primary text-base font-display">Live Lecture Captioning</h2>
+          <h2 className="font-bold text-text-primary text-base font-display">Live Captions</h2>
           {isListening && <Badge variant="live">Live</Badge>}
         </div>
 

@@ -12,16 +12,48 @@ const getLocalStorage = (key, defaultValue) => {
   }
 };
 
+// Apply theme to <html> element
+const applyTheme = (theme) => {
+  const html = document.documentElement;
+  if (theme === 'light') {
+    html.classList.add('light');
+    html.classList.remove('dark');
+  } else {
+    html.classList.remove('light');
+    html.classList.add('dark');
+  }
+};
+
+// Apply high contrast class to <html> element
+const applyHighContrast = (isHighContrast) => {
+  const html = document.documentElement;
+  if (isHighContrast) {
+    html.classList.add('high-contrast');
+  } else {
+    html.classList.remove('high-contrast');
+  }
+};
+
+const savedTheme = getLocalStorage('signify-theme', 'dark');
+const savedHighContrast = getLocalStorage('signify-high-contrast', false);
+applyTheme(savedTheme);
+applyHighContrast(savedHighContrast);
+
 export const useSettingsStore = create((set) => ({
-  targetLanguage: getLocalStorage('signify-target-lang', 'es'),
+  targetLanguage: getLocalStorage('signify-target-lang', 'en'),
   autoTranslate: getLocalStorage('signify-auto-translate', false),
   autoSummarize: getLocalStorage('signify-auto-summarize', false),
-  captionFontSize: getLocalStorage('signify-font-size', 'lg'), // sm, md, lg, xl, 2xl
+  captionFontSize: getLocalStorage('signify-font-size', 'lg'),
   reduceMotion: getLocalStorage('signify-reduce-motion', false),
   groqApiKey: getLocalStorage('signify-groq-key', ''),
-  captionStyle: getLocalStorage('signify-caption-style', 'standard'), // standard | large | contrast
+  captionStyle: getLocalStorage('signify-caption-style', 'standard'),
   bgOpacity: Number(getLocalStorage('signify-bg-opacity', 20)),
-  lineSpacing: getLocalStorage('signify-line-spacing', 'relaxed'), // tight | normal | relaxed | loose
+  lineSpacing: getLocalStorage('signify-line-spacing', 'relaxed'),
+  // New settings
+  theme: getLocalStorage('signify-theme', 'dark'),
+  notificationSounds: getLocalStorage('signify-notification-sounds', true),
+  highContrast: getLocalStorage('signify-high-contrast', false),
+  captionSpeed: getLocalStorage('signify-caption-speed', 'normal'), // slow | normal | fast
 
   actions: {
     setTargetLanguage: (lang) => {
@@ -62,6 +94,27 @@ export const useSettingsStore = create((set) => ({
     setLineSpacing: (spacing) => {
       localStorage.setItem('signify-line-spacing', spacing);
       set({ lineSpacing: spacing });
-    }
+    },
+    toggleTheme: () => set((state) => {
+      const newTheme = state.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('signify-theme', newTheme);
+      applyTheme(newTheme);
+      return { theme: newTheme };
+    }),
+    toggleNotificationSounds: () => set((state) => {
+      const newVal = !state.notificationSounds;
+      localStorage.setItem('signify-notification-sounds', String(newVal));
+      return { notificationSounds: newVal };
+    }),
+    toggleHighContrast: () => set((state) => {
+      const newVal = !state.highContrast;
+      localStorage.setItem('signify-high-contrast', String(newVal));
+      applyHighContrast(newVal);
+      return { highContrast: newVal };
+    }),
+    setCaptionSpeed: (speed) => {
+      localStorage.setItem('signify-caption-speed', speed);
+      set({ captionSpeed: speed });
+    },
   }
 }));

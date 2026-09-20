@@ -65,7 +65,7 @@ export default function Navbar() {
             {isListening && (
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold animate-pulse-glow">
                 <Radio className="w-4 h-4 text-red-500" />
-                <span>Session Active</span>
+                <span>Recording Live</span>
               </div>
             )}
           </div>
@@ -77,7 +77,7 @@ export default function Navbar() {
             )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-surface border border-transparent hover:border-border-subtle"
+              className="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-surface border border-transparent hover:border-border-subtle border"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -119,7 +119,7 @@ export default function Navbar() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
                   </span>
-                  <span>Session Active - Recording Live</span>
+                  <span>Recording Live</span>
                 </div>
               )}
             </div>

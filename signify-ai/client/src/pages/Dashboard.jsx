@@ -35,7 +35,8 @@ import {
   BookOpen,
   Languages,
   Clock,
-  ExternalLink
+  ExternalLink,
+  RefreshCw
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -59,6 +60,15 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadLectures();
+
+    // Refresh data when user returns to this tab
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        loadLectures();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   // Delete individual lecture
@@ -116,7 +126,7 @@ export default function Dashboard() {
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const totalStudyTimeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
 
-  // 2. Prepare Chart Data (last 7 lectures)
+  // 2. Prepare Chart Data (Past 7 Days continuous timeline)
   const getChartData = () => {
     if (lectures.length === 0) {
       // Mock data to demonstrate Recharts beauty on empty state
@@ -126,23 +136,49 @@ export default function Dashboard() {
         { name: 'Wed', Words: 900, title: 'Sample: Quantum Physics' },
         { name: 'Thu', Words: 2100, title: 'Sample: Roman Empire' },
         { name: 'Fri', Words: 1500, title: 'Sample: Linear Algebra' },
-        { name: 'Sat', Words: 0, title: '' },
-        { name: 'Sun', Words: 0, title: '' }
+        { name: 'Sat', Words: 400, title: 'Sample: Quick Review' },
+        { name: 'Sun', Words: 0, title: 'Rest Day' }
       ];
     }
 
-    return lectures
-      .slice(0, 7)
-      .reverse()
-      .map(l => {
-        const date = new Date(l.createdAt);
-        const day = date.toLocaleDateString(undefined, { weekday: 'short' });
-        return {
-          name: day,
-          Words: l.wordCount,
-          title: l.title
-        };
+    // Build array for past 7 days
+    const result = [];
+    const today = new Date();
+    
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().slice(0, 10);
+      const dayLabel = d.toLocaleDateString(undefined, { weekday: 'short' });
+
+      // Find lectures on this day
+      const dayLectures = lectures.filter(l => {
+        if (!l.createdAt) return false;
+        const lDate = new Date(l.createdAt).toISOString().slice(0, 10);
+        return lDate === dateStr;
       });
+
+      const totalWords = dayLectures.reduce((acc, l) => acc + (l.wordCount || 0), 0);
+      const titles = dayLectures.map(l => l.title).join(', ');
+
+      result.push({
+        name: dayLabel,
+        Words: totalWords,
+        title: titles || (totalWords > 0 ? 'Session' : 'No Activity')
+      });
+    }
+
+    // Fallback: If all 7 days sum to 0 (e.g. older sessions), map individual lectures
+    const totalWordsInWindow = result.reduce((a, b) => a + b.Words, 0);
+    if (totalWordsInWindow === 0 && lectures.length > 0) {
+      return lectures.slice(0, 7).reverse().map(l => ({
+        name: new Date(l.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+        Words: l.wordCount || 0,
+        title: l.title || 'Lecture'
+      }));
+    }
+
+    return result;
   };
 
   // Format table durations
@@ -182,6 +218,14 @@ export default function Dashboard() {
         </div>
         <div className="flex gap-3">
           <Button
+            onClick={loadLectures}
+            variant="ghost"
+            icon={RefreshCw}
+            className="uppercase tracking-wider text-xs"
+          >
+            Refresh
+          </Button>
+          <Button
             onClick={() => navigate('/classroom')}
             variant="primary"
             icon={Play}
@@ -193,7 +237,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-        <StatsCard value={totalLecturesCount} label="Total Lectures Archived" icon={History} />
+        <StatsCard value={totalLecturesCount} label="Total Sessions" icon={History} />
         <StatsCard value={totalWordsCaptured} label="Total Words Captured" icon={BookOpen} />
         <StatsCard value={totalLanguagesUsed} label="Languages Explored" icon={Languages} />
         {/* Render study duration formatted string using custom string override in StatsCard */}
@@ -207,7 +251,7 @@ export default function Dashboard() {
         <div className="lg:col-span-1 xl:col-span-2 bg-bg-surface border border-border-subtle rounded-xl p-6 relative">
           <div className="flex items-center justify-between border-b border-border-subtle pb-4 mb-6">
             <div>
-              <h2 className="font-bold text-text-primary text-base font-display">Student Word Counts</h2>
+              <h2 className="font-bold text-text-primary text-base font-display">Words per Session</h2>
               <p className="text-[10px] text-text-secondary mt-0.5">
                 {lectures.length === 0 
                   ? 'Showing sample stats. Save a lecture to populate.' 
@@ -228,17 +272,17 @@ export default function Dashboard() {
                     <stop offset="95%" stopColor="#FF4D4D" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="rgba(255, 255, 255, 0.03)" vertical={false} />
+                <CartesianGrid stroke="rgba(255, 255, 255, 0.08)" vertical={false} strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="name" 
-                  stroke="#4A4A5A" 
-                  fontSize={11} 
+                  stroke="#8A8A9A" 
+                  tick={{ fill: '#8A8A9A', fontSize: 11 }}
                   tickLine={false} 
                   axisLine={false} 
                 />
                 <YAxis 
-                  stroke="#4A4A5A" 
-                  fontSize={11} 
+                  stroke="#8A8A9A" 
+                  tick={{ fill: '#8A8A9A', fontSize: 11 }}
                   tickLine={false} 
                   axisLine={false} 
                   tickFormatter={(val) => val.toLocaleString()}
@@ -260,7 +304,7 @@ export default function Dashboard() {
         {/* Right 1/3: Quick Actions */}
         <div className="bg-bg-surface border border-border-subtle rounded-xl p-6 flex flex-col justify-between">
           <div className="space-y-4">
-            <h2 className="font-bold text-text-primary text-base font-display border-b border-border-subtle pb-3">Quick Utilities</h2>
+            <h2 className="font-bold text-text-primary text-base font-display border-b border-border-subtle pb-3">Data Management</h2>
             <p className="text-xs text-text-secondary">
               Manage your local archives, backup your data, or clean storage spaces safely.
             </p>
@@ -272,7 +316,7 @@ export default function Dashboard() {
                 className="w-full justify-start text-xs"
                 icon={Download}
               >
-                Export Database (.json)
+                Export All Sessions
               </Button>
               <Button
                 onClick={() => setConfirmClearOpen(true)}
@@ -281,13 +325,13 @@ export default function Dashboard() {
                 className="w-full justify-start text-xs"
                 icon={Trash2}
               >
-                Clear Lecture History
+                Delete All Sessions
               </Button>
             </div>
           </div>
           
           <div className="mt-8 pt-4 border-t border-border-subtle text-[10px] text-text-muted flex items-center justify-between">
-            <span>Powered by Groq API + IndexedDB</span>
+            <span>Powered by Signify AI Engine</span>
             <span>v1.0.0</span>
           </div>
         </div>
@@ -296,12 +340,12 @@ export default function Dashboard() {
       {/* Recent Lectures Table */}
       <div className="bg-bg-surface border border-border-subtle rounded-xl p-6">
         <div className="flex items-center justify-between border-b border-border-subtle pb-4 mb-4">
-          <h2 className="font-bold text-text-primary text-base font-display">Recent Archived Sessions</h2>
+          <h2 className="font-bold text-text-primary text-base font-display">Recent Sessions</h2>
           <Badge variant="count">{lectures.length} Total</Badge>
         </div>
 
         {loading ? (
-          <div className="py-12 text-center text-text-secondary text-xs">Loading database records...</div>
+          <div className="py-12 text-center text-text-secondary text-xs">Loading sessions...</div>
         ) : lectures.length === 0 ? (
           <div className="py-16 text-center space-y-4 max-w-sm mx-auto">
             <div className="p-3 bg-bg-elevated rounded-full border border-border-subtle text-text-muted w-fit mx-auto">
@@ -382,7 +426,7 @@ export default function Dashboard() {
             <div>
               <p className="text-xs font-bold uppercase tracking-wider">Warning: Permanent Action</p>
               <p className="text-[10px] leading-relaxed mt-0.5">
-                Clearing history removes all recorded lectures, AI summaries, and Q&A chat transcripts from your local browser IndexedDB storage. This cannot be undone.
+                Clearing history removes all recorded sessions, AI summaries, and chat transcripts from your browser storage. This cannot be undone.
               </p>
             </div>
           </div>

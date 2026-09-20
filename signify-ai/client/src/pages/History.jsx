@@ -228,7 +228,7 @@ export default function History() {
 
       {/* Lectures Masonry Grid */}
       {loading ? (
-        <div className="py-20 text-center text-text-secondary text-sm">Accessing IndexedDB archives...</div>
+        <div className="py-20 text-center text-text-secondary text-sm">Loading lecture archives...</div>
       ) : filteredLectures.length === 0 ? (
         <div className="glass-panel p-16 text-center space-y-4 max-w-md mx-auto rounded-xl">
           <div className="p-4 bg-bg-elevated border border-border-subtle rounded-full text-text-muted w-fit mx-auto">

@@ -1,44 +1,70 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Mic, MicOff, Volume2, Shield, Settings, Sliders, Play, Square, 
+  Mic, MicOff, Volume2, Shield, Settings, Sliders, Play, Pause, RotateCcw,
   Sparkles, CheckCircle2, Languages, Activity, Eye, Accessibility,
-  ChevronRight, ZoomIn, ZoomOut, Contrast, Gauge
+  ChevronRight, ZoomIn, ZoomOut, Contrast, Gauge, Send,
+  Layers, Cpu, BookOpen, Repeat
 } from 'lucide-react';
 import AvatarScene from '../components/avatar/AvatarScene';
+import MediaPipeSkeletonViewer from '../components/avatar/MediaPipeSkeletonViewer';
+import RyloAvatarViewer from '../components/avatar/RyloAvatarViewer';
 import Button from '../components/ui/Button';
+import Badge from '../components/ui/Badge';
+import toast from 'react-hot-toast';
 
-// Mock script for instant hackathon demonstration
-const DEMO_SCENARIO = [
-  { text: "Good morning students.", duration: 3000 },
-  { text: "Today we will learn about photosynthesis.", duration: 5500 },
-  { text: "Photosynthesis is the process by which plants convert sunlight into energy.", duration: 8000 },
-  { text: "It requires water, carbon dioxide, and sunlight to work.", duration: 6000 }
+// Target Sign Languages supported
+const SIGN_LANGUAGES = [
+  { code: 'ASL', name: 'American Sign Language (ASL)', flag: '🇺🇸' },
+  { code: 'ISL', name: 'Indian Sign Language (ISL)', flag: '🇮🇳' },
+  { code: 'BSL', name: 'British Sign Language (BSL)', flag: '🇬🇧' },
+  { code: 'IS', name: 'International Sign (IS)', flag: '🌐' }
+];
+
+// Spoken Source Languages supported
+const SPOKEN_LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'ta', name: 'Tamil (தமிழ்)', flag: '🇮🇳' },
+  { code: 'es', name: 'Spanish (Español)', flag: '🇪🇸' },
+  { code: 'hi', name: 'Hindi (हिंदी)', flag: '🇮🇳' },
+  { code: 'fr', name: 'French (Français)', flag: '🇫🇷' }
+];
+
+// Sample phrases for quick translation testing
+const SAMPLE_PHRASES = [
+  "Good morning students.",
+  "Photosynthesis converts sunlight into energy.",
+  "Water and carbon dioxide are essential for plants.",
+  "Where is the chemistry laboratory?"
 ];
 
 export default function SignAvatar() {
-  const [isListening, setIsListening] = useState(false);
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  const [captionList, setCaptionList] = useState([]);
-  const [interimText, setInterimText] = useState("");
-  const [currentSentence, setCurrentSentence] = useState("");
-  const [confidence, setConfidence] = useState(98.4);
+  // Translation state
+  const [spokenLang, setSpokenLang] = useState('en');
+  const [targetSignLang, setTargetSignLang] = useState('ASL');
+  const [inputText, setInputText] = useState('');
+  const [activeSentence, setActiveSentence] = useState('');
+  const [activeWordIndex, setActiveWordIndex] = useState(-1);
+  const [signTokens, setSignTokens] = useState([]);
+
+  // Player controls
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [signingSpeed, setSigningSpeed] = useState(1.0);
   const [avatarScale, setAvatarScale] = useState(1.0);
-  const [highContrast, setHighContrast] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [statusText, setStatusText] = useState("System Ready");
-  const [sessionWordCount, setSessionWordCount] = useState(0);
+  const [viewMode, setViewMode] = useState('rylo'); // 'rylo', 'mediapipe', '3d', 'skeleton'
+  const [isLooping, setIsLooping] = useState(false);
+  const [confidence, setConfidence] = useState(98.6);
+  
+  // Speech & Demo state
+  const [isListening, setIsListening] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   const recognitionRef = useRef(null);
-  const demoIntervalRef = useRef(null);
-  const demoIndexRef = useRef(0);
-  const wordCountTimerRef = useRef(null);
-  const typeIntervalRef = useRef(null);
-  const signingTimeoutRef = useRef(null);
+  const playbackTimerRef = useRef(null);
+  const wordTimerRef = useRef(null);
 
-  // Setup Web Speech API (fallback)
+  // Setup Web Speech API
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return;
@@ -46,413 +72,444 @@ export default function SignAvatar() {
     const rec = new SpeechRecognition();
     rec.continuous = true;
     rec.interimResults = true;
-    rec.lang = 'en-US';
+    rec.lang = spokenLang === 'ta' ? 'ta-IN' : spokenLang === 'es' ? 'es-ES' : 'en-US';
 
     rec.onresult = (event) => {
       let interim = '';
       let final = '';
-
       for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          final += event.results[i][0].transcript;
-        } else {
-          interim += event.results[i][0].transcript;
+        if (event.results[i].isFinal) final += event.results[i][0].transcript;
+        else interim += event.results[i][0].transcript;
+      }
+      if (final || interim) {
+        const text = (final || interim).trim();
+        setInputText(text);
+        if (final) {
+          triggerSignTranslation(text);
         }
       }
-
-      if (interim) {
-        setInterimText(interim);
-      }
-
-      if (final) {
-        const cleanFinal = final.trim();
-        setCaptionList(prev => [...prev, cleanFinal]);
-        setCurrentSentence(cleanFinal);
-        setInterimText("");
-        setSessionWordCount(prev => prev + cleanFinal.split(" ").length);
-        
-        // Trigger signing animation
-        setIsSigning(true);
-        setStatusText("Translating to Sign Language...");
-        
-        // Set simulated sign confidence
-        setConfidence(parseFloat((95 + Math.random() * 4.9).toFixed(1)));
-
-        // Stop signing after a duration based on length
-        const duration = Math.min(8000, Math.max(3000, cleanFinal.length * 80));
-        if (signingTimeoutRef.current) clearTimeout(signingTimeoutRef.current);
-        signingTimeoutRef.current = setTimeout(() => {
-          setIsSigning(false);
-          setStatusText("Awaiting Speech...");
-        }, duration);
-      }
-    };
-
-    rec.onerror = (e) => {
-      console.error(e);
-      setStatusText(`Error: ${e.error}`);
     };
 
     rec.onend = () => {
       if (isListening && !isDemoMode) {
-        try { rec.start(); } catch (err) { console.error(err); }
+        try { rec.start(); } catch (_) {}
       }
     };
 
     recognitionRef.current = rec;
-
     return () => {
       if (recognitionRef.current) recognitionRef.current.stop();
     };
-  }, [isListening, isDemoMode]);
+  }, [isListening, isDemoMode, spokenLang]);
 
-  // Start Real Speech
-  const startSpeech = () => {
-    stopDemo();
-    setIsListening(true);
-    setStatusText("Awaiting Speech...");
-    setCaptionList([]);
-    setInterimText("");
-    setCurrentSentence("");
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.start();
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  };
-
-  // Stop Speech
-  const stopSpeech = () => {
-    setIsListening(false);
-    setStatusText("System Idle");
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-  };
-
-  // Run Hackathon Demo Scenario
-  const startDemo = () => {
-    stopSpeech();
-    setIsDemoMode(true);
-    setIsListening(true);
-    setCaptionList([]);
-    setInterimText("");
-    setCurrentSentence("");
-    demoIndexRef.current = 0;
-    runNextDemoStep();
-  };
-
-  const stopDemo = () => {
-    setIsDemoMode(false);
-    setIsListening(false);
-    setIsSigning(false);
-    setStatusText("System Ready");
-    if (demoIntervalRef.current) clearTimeout(demoIntervalRef.current);
-    if (typeIntervalRef.current) clearInterval(typeIntervalRef.current);
-    if (signingTimeoutRef.current) clearTimeout(signingTimeoutRef.current);
-  };
-
-  const runNextDemoStep = () => {
-    if (demoIndexRef.current >= DEMO_SCENARIO.length) {
-      demoIndexRef.current = 0; // Loop demo
+  // Core function: Translate text to sign sequence & start player
+  const triggerSignTranslation = (textToTranslate) => {
+    const text = (textToTranslate || inputText).trim();
+    if (!text) {
+      toast.error('Please enter text or start speech input first');
+      return;
     }
 
-    const currentStep = DEMO_SCENARIO[demoIndexRef.current];
-    setStatusText("Speech Detected...");
-    setConfidence(parseFloat((97.5 + Math.random() * 2.3).toFixed(1)));
+    setActiveSentence(text);
+    const words = text.split(/\s+/).filter(Boolean);
+    const tokens = words.map((w, idx) => ({
+      id: idx,
+      word: w.toUpperCase().replace(/[^A-Z]/g, ''),
+      original: w,
+      symbol: `[${w.toUpperCase().replace(/[^A-Z]/g, '')}]`
+    }));
 
-    // Typeout effect simulation for interim text
-    const words = currentStep.text.split(" ");
-    let currentWordIdx = 0;
-    
-    if (typeIntervalRef.current) clearInterval(typeIntervalRef.current);
-    typeIntervalRef.current = setInterval(() => {
-      if (currentWordIdx < words.length) {
-        const typed = words.slice(0, currentWordIdx + 1).join(" ");
-        setInterimText(typed);
-        currentWordIdx++;
+    setSignTokens(tokens);
+    setIsPlaying(true);
+    setIsSigning(true);
+    setActiveWordIndex(0);
+    setConfidence(parseFloat((97 + Math.random() * 2.8).toFixed(1)));
+
+    // Playback loop stepping word by word
+    if (wordTimerRef.current) clearInterval(wordTimerRef.current);
+    let currentIdx = 0;
+    const intervalMs = Math.max(600, 1200 / signingSpeed);
+
+    wordTimerRef.current = setInterval(() => {
+      if (currentIdx < words.length) {
+        setActiveWordIndex(currentIdx);
+        currentIdx++;
       } else {
-        clearInterval(typeIntervalRef.current);
-        // Commit sentence
-        setCaptionList(prev => [...prev, currentStep.text]);
-        setCurrentSentence(currentStep.text);
-        setInterimText("");
-        setSessionWordCount(prev => prev + words.length);
-        setIsSigning(true);
-        setStatusText("Sign Language Active");
-
-        // Keep signing for the step duration
-        demoIntervalRef.current = setTimeout(() => {
+        if (isLooping) {
+          currentIdx = 0;
+          setActiveWordIndex(0);
+        } else {
+          clearInterval(wordTimerRef.current);
           setIsSigning(false);
-          setStatusText("Awaiting Speech...");
-          demoIndexRef.current++;
-          // Wait 2 seconds before the next sentence
-          demoIntervalRef.current = setTimeout(runNextDemoStep, 2000);
-        }, currentStep.duration - 1500);
+          setIsPlaying(false);
+        }
       }
-    }, 250); // type a word every 250ms
+    }, intervalMs);
+  };
+
+  const handleStop = () => {
+    setIsPlaying(false);
+    setIsSigning(false);
+    setActiveWordIndex(-1);
+    if (wordTimerRef.current) clearInterval(wordTimerRef.current);
+  };
+
+  const toggleMic = () => {
+    if (isListening) {
+      setIsListening(false);
+      if (recognitionRef.current) recognitionRef.current.stop();
+      toast.success('Microphone stopped');
+    } else {
+      setIsListening(true);
+      if (recognitionRef.current) {
+        try { recognitionRef.current.start(); } catch (_) {}
+      }
+      toast.success('Listening for live speech...');
+    }
+  };
+
+  // Preset phrase click
+  const selectPreset = (phrase) => {
+    setInputText(phrase);
+    triggerSignTranslation(phrase);
   };
 
   useEffect(() => {
     return () => {
-      if (demoIntervalRef.current) clearTimeout(demoIntervalRef.current);
-      if (wordCountTimerRef.current) clearInterval(wordCountTimerRef.current);
-      if (typeIntervalRef.current) clearInterval(typeIntervalRef.current);
-      if (signingTimeoutRef.current) clearTimeout(signingTimeoutRef.current);
+      if (wordTimerRef.current) clearInterval(wordTimerRef.current);
+      if (playbackTimerRef.current) clearTimeout(playbackTimerRef.current);
     };
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0D0D0F] p-4 md:p-8 flex flex-col justify-between overflow-x-hidden font-sans">
-      {/* Glow Effects */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
-
-      {/* Header Info */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 z-10">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 text-[10px] font-bold tracking-widest text-[#FF4D4D] bg-[#FF4D4D]/10 border border-[#FF4D4D]/20 uppercase rounded-full">
-              Flagship Feature
-            </span>
-            {isSigning && (
-              <motion.span 
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-                className="px-2.5 py-1 text-[10px] font-bold tracking-widest text-violet-400 bg-violet-400/10 border border-violet-400/20 uppercase rounded-full flex items-center gap-1.5"
-              >
-                <Sparkles className="w-3 h-3" /> Avatar Signing
-              </motion.span>
-            )}
+    <div className="min-h-screen bg-bg-base p-4 md:p-8 flex flex-col justify-between select-none">
+      
+      {/* 1. Header & Rylo Language Pair Switcher */}
+      <div className="space-y-4 mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-widest text-accent-coral bg-accent-coral/10 border border-accent-coral/20 uppercase rounded-full">
+                Rylo-Powered Engine
+              </span>
+              <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-widest text-accent-blue-soft bg-accent-blue/10 border border-accent-blue/20 uppercase rounded-full flex items-center gap-1">
+                <Sparkles className="w-3 h-3" /> Real-time Sign MT
+              </span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-text-primary font-display mt-2">
+              Sign Language Translator
+            </h1>
+            <p className="text-text-secondary text-xs">
+              Translate spoken classroom text into continuous sign language gestures in real-time.
+            </p>
           </div>
-          <h1 className="text-3xl font-black text-white font-display mt-2">AI Sign Language Avatar</h1>
-          <p className="text-text-secondary text-sm">Transforming classroom speech into real-time visual sign communication.</p>
+
         </div>
 
-        {/* Demo Quick Controls */}
-        <div className="flex gap-3 bg-[#161619]/80 backdrop-blur-md p-1.5 rounded-xl border border-white/5">
-          {isListening ? (
-            <button 
-              onClick={isDemoMode ? stopDemo : stopSpeech}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-[#FF4D4D] bg-[#FF4D4D]/10 hover:bg-[#FF4D4D]/20 border border-[#FF4D4D]/20 rounded-lg transition-all"
+        {/* Rylo-style Language Bar */}
+        <div className="bg-bg-surface border border-border-subtle rounded-xl p-3 flex flex-wrap items-center justify-between gap-4">
+          {/* Spoken Language Dropdown */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold uppercase text-text-secondary tracking-wider">Spoken Input:</span>
+            <select
+              value={spokenLang}
+              onChange={(e) => setSpokenLang(e.target.value)}
+              className="bg-bg-elevated border border-border-subtle rounded-lg px-3 py-1.5 text-xs text-text-primary focus:outline-none focus:border-accent-coral cursor-pointer"
             >
-              <Square className="w-3.5 h-3.5 fill-[#FF4D4D]" /> Stop
-            </button>
-          ) : (
-            <>
-              <button 
-                onClick={startSpeech}
-                className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-blue-400 hover:text-white bg-blue-500/10 hover:bg-blue-500/30 border border-blue-500/20 rounded-lg transition-all"
-              >
-                <Mic className="w-3.5 h-3.5" /> Start Live Mic
-              </button>
-              <button 
-                onClick={startDemo}
-                className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-violet-400 hover:text-white bg-violet-500/10 hover:bg-violet-500/30 border border-violet-500/20 rounded-lg transition-all shadow-lg shadow-violet-500/5"
-              >
-                <Play className="w-3.5 h-3.5 fill-violet-400" /> Start Demo Run
-              </button>
-            </>
-          )}
+              {SPOKEN_LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code}>{l.flag} {l.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Target Sign Language Selector */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold uppercase text-text-secondary tracking-wider">Target Sign Language:</span>
+            <div className="flex gap-1">
+              {SIGN_LANGUAGES.map((sl) => (
+                <button
+                  key={sl.code}
+                  onClick={() => setTargetSignLang(sl.code)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors flex items-center gap-1.5 ${
+                    targetSignLang === sl.code
+                      ? 'bg-accent-coral/15 text-accent-coral border-accent-coral/30'
+                      : 'bg-bg-elevated text-text-secondary border-border-subtle hover:text-text-primary'
+                  }`}
+                >
+                  <span>{sl.flag}</span>
+                  <span>{sl.code}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Main Dashboard Layout */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 z-10">
+      {/* 2. Main Rylo Split Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
         
-        {/* LEFT PANEL: Live Captions */}
-        <div className={`lg:col-span-1 bg-[#121215]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 ${isFullscreen ? 'opacity-30 pointer-events-none' : ''}`}>
-          <div className="space-y-6 flex-1 flex flex-col">
-            <div className="flex justify-between items-center pb-4 border-b border-white/5">
-              <span className="text-xs font-bold tracking-wider text-text-secondary uppercase">Live Speech Feed</span>
-              <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${isListening ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-600'}`} />
-                <span className="text-[10px] text-text-secondary font-semibold">{isListening ? 'STREAMING' : 'OFFLINE'}</span>
+        {/* LEFT COLUMN (5 cols): Input Card & Sample Presets */}
+        <div className="lg:col-span-5 space-y-6 flex flex-col justify-between">
+          
+          {/* Main Translation Text Box */}
+          <div className="bg-bg-surface border border-border-subtle rounded-xl p-6 space-y-4 shadow-lg flex-1 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center pb-2 border-b border-border-subtle">
+                <span className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
+                  <Languages className="w-4 h-4 text-accent-coral" /> Spoken Text Input
+                </span>
+                <span className="text-[10px] text-text-muted">{inputText.length} characters</span>
               </div>
-            </div>
 
-            {/* Scrolling Captions Frame */}
-            <div className={`flex-1 overflow-y-auto min-h-[250px] space-y-4 pr-2 ${highContrast ? 'contrast-125' : ''}`}>
-              {captionList.length === 0 && !interimText ? (
-                <div className="h-full flex flex-col items-center justify-center text-center text-text-muted mt-12">
-                  <Mic className="w-8 h-8 mb-3 opacity-30 stroke-1" />
-                  <p className="text-xs">Start a session to stream real-time text</p>
+              <textarea
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Type or paste lecture text here (e.g. 'Photosynthesis converts sunlight into energy')..."
+                className="w-full h-36 bg-bg-elevated border border-border-subtle hover:border-accent-coral/20 focus:border-accent-coral focus:ring-1 focus:ring-accent-coral/30 rounded-lg p-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none resize-none transition-colors"
+              />
+
+              {/* Active Sentence & Word-by-Word Highlight Display */}
+              {activeSentence && (
+                <div className="bg-black/20 p-3 rounded-lg border border-border-subtle space-y-1">
+                  <span className="text-[9px] uppercase font-bold text-accent-coral tracking-wider">Active Sign Playback Transcript</span>
+                  <div className="flex flex-wrap gap-1.5 text-xs font-semibold">
+                    {activeSentence.split(/\s+/).map((w, idx) => (
+                      <span
+                        key={idx}
+                        className={`px-1.5 py-0.5 rounded transition-all ${
+                          idx === activeWordIndex
+                            ? 'bg-accent-coral text-bg-base font-bold scale-110 shadow'
+                            : 'text-text-secondary bg-bg-elevated'
+                        }`}
+                      >
+                        {w}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              ) : (
-                <>
-                  {captionList.map((caption, i) => (
-                    <motion.div 
-                      key={i} 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="border-l-2 border-blue-500/40 pl-3 py-1"
-                    >
-                      <p className={`font-semibold ${highContrast ? 'text-white text-base' : 'text-text-primary text-sm'}`}>{caption}</p>
-                    </motion.div>
-                  ))}
-                  
-                  {interimText && (
-                    <motion.div 
-                      initial={{ opacity: 0 }} 
-                      animate={{ opacity: 0.7 }}
-                      className="border-l-2 border-violet-500/30 pl-3 py-1 italic"
-                    >
-                      <p className="text-text-secondary text-sm">{interimText}...</p>
-                    </motion.div>
-                  )}
-                </>
               )}
             </div>
+
+            {/* Action Buttons Row */}
+            <div className="flex items-center gap-3 pt-3 border-t border-border-subtle">
+              <Button
+                onClick={() => triggerSignTranslation()}
+                variant="primary"
+                className="flex-1"
+                icon={Send}
+              >
+                Translate to Sign
+              </Button>
+
+              <button
+                onClick={toggleMic}
+                className={`p-2.5 rounded-lg border text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  isListening
+                    ? 'bg-red-500/15 text-red-400 border-red-500/30 animate-pulse'
+                    : 'bg-bg-elevated text-text-secondary border-border-subtle hover:text-text-primary'
+                }`}
+                title="Voice Input Mic"
+              >
+                {isListening ? <Mic className="w-4 h-4 text-red-500" /> : <MicOff className="w-4 h-4" />}
+              </button>
+
+              <button
+                onClick={() => { setInputText(''); handleStop(); }}
+                className="p-2.5 rounded-lg bg-bg-elevated hover:bg-bg-surface border border-border-subtle text-text-secondary hover:text-text-primary text-xs font-bold"
+                title="Clear input"
+              >
+                Clear
+              </button>
+            </div>
           </div>
 
-          {/* Left panel bottom stats */}
-          <div className="pt-4 border-t border-white/5 space-y-3 mt-6">
-            <div className="flex justify-between text-xs">
-              <span className="text-text-secondary flex items-center gap-1.5"><Languages className="w-3.5 h-3.5" /> Language</span>
-              <span className="font-bold text-white">English (US)</span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-text-secondary flex items-center gap-1.5"><Activity className="w-3.5 h-3.5" /> Confidence</span>
-              <span className="font-bold text-emerald-400">{isListening ? `${confidence}%` : 'N/A'}</span>
+          {/* Sample Phrases Preset Library */}
+          <div className="bg-bg-surface border border-border-subtle rounded-xl p-4 space-y-3">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-text-secondary block">
+              Quick Test Phrases (Click to Sign)
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {SAMPLE_PHRASES.map((phrase, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => selectPreset(phrase)}
+                  className="px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-accent-coral/10 hover:border-accent-coral/30 border border-border-subtle text-xs text-text-secondary hover:text-accent-coral font-medium transition-colors text-left"
+                >
+                  "{phrase}"
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* CENTER PANEL: 3D Sign Language Avatar */}
-        <div className={`relative bg-[#0F0F12]/90 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-500 ${isFullscreen ? 'lg:col-span-4 h-[75vh]' : 'lg:col-span-2 min-h-[450px]'}`}>
-          {/* Top Panel Controls */}
-          <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-20 pointer-events-none">
-            <div className="bg-[#121215]/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/5 flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${isSigning ? 'bg-violet-400 animate-ping' : 'bg-blue-400'}`} />
-              <span className="text-[10px] text-white font-bold tracking-wider uppercase">
-                {statusText}
+        {/* RIGHT COLUMN (7 cols): Rylo Sign Viewer & Player Controls */}
+        <div className="lg:col-span-7 bg-bg-surface border border-border-subtle rounded-xl p-6 flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden">
+          
+          {/* Top Viewer Controls: Mode Switcher Tabs */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle pb-4 z-10">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-accent-coral animate-ping" />
+              <span className="font-bold text-text-primary text-sm font-display uppercase tracking-wider">
+                {targetSignLang} Visual Output
               </span>
             </div>
 
-            <div className="flex gap-2 pointer-events-auto">
-              <button 
-                onClick={() => setAvatarScale(prev => Math.min(1.5, prev + 0.1))}
-                className="p-2 bg-[#121215]/80 hover:bg-[#1C1C22]/80 backdrop-blur-md rounded-lg border border-white/5 text-text-secondary hover:text-white transition-all"
-                title="Zoom In"
+            {/* Rylo View Modes: Rylo Web Avatar | MediaPipe Stickman | 3D Avatar | AI Skeleton */}
+            <div className="flex gap-1 bg-bg-elevated p-1 rounded-lg border border-border-subtle">
+              <button
+                onClick={() => setViewMode('rylo')}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                  viewMode === 'rylo'
+                    ? 'bg-accent-coral text-bg-base shadow'
+                    : 'text-text-secondary hover:text-text-primary'
+                }`}
               >
-                <ZoomIn className="w-4 h-4" />
+                Rylo Avatar
               </button>
-              <button 
-                onClick={() => setAvatarScale(prev => Math.max(0.7, prev - 0.1))}
-                className="p-2 bg-[#121215]/80 hover:bg-[#1C1C22]/80 backdrop-blur-md rounded-lg border border-white/5 text-text-secondary hover:text-white transition-all"
-                title="Zoom Out"
+              <button
+                onClick={() => setViewMode('mediapipe')}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                  viewMode === 'mediapipe'
+                    ? 'bg-accent-coral text-bg-base shadow'
+                    : 'text-text-secondary hover:text-text-primary'
+                }`}
               >
-                <ZoomOut className="w-4 h-4" />
+                MediaPipe Stickman
               </button>
-              <button 
-                onClick={() => setIsFullscreen(prev => !prev)}
-                className="p-2 bg-[#121215]/80 hover:bg-[#1C1C22]/80 backdrop-blur-md rounded-lg border border-white/5 text-text-secondary hover:text-white transition-all"
-                title="Toggle Fullscreen Avatar"
+              <button
+                onClick={() => setViewMode('3d')}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                  viewMode === '3d'
+                    ? 'bg-accent-coral text-bg-base shadow'
+                    : 'text-text-secondary hover:text-text-primary'
+                }`}
               >
-                <Accessibility className="w-4 h-4" />
+                3D Canvas
+              </button>
+              <button
+                onClick={() => setViewMode('skeleton')}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                  viewMode === 'skeleton'
+                    ? 'bg-accent-coral text-bg-base shadow'
+                    : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                AI Skeleton
               </button>
             </div>
           </div>
 
-          {/* R3F 3D Viewport */}
-          <div className="flex-1 w-full h-full relative" style={{ transform: `scale(${avatarScale})` }}>
-            <AvatarScene isSigning={isSigning} speed={signingSpeed} currentWord={currentSentence} />
-          </div>
-
-          {/* Bottom Waveform / Captions overlay */}
-          <div className="absolute bottom-6 left-6 right-6 z-20 pointer-events-none">
-            <div className="bg-[#121215]/75 backdrop-blur-xl p-4 rounded-xl border border-white/10 flex items-center justify-between gap-4 max-w-xl mx-auto shadow-2xl">
-              <div className="flex-1">
-                <span className="text-[9px] font-bold text-violet-400 tracking-widest uppercase">Sign Translation</span>
-                <p className="text-sm font-bold text-white line-clamp-1 mt-0.5">
-                  {currentSentence || (isListening ? "Listening..." : "Click 'Start Demo' to see avatar sign language gestures")}
-                </p>
-              </div>
-              
-              {/* Pulsing Visualizer */}
-              <div className="flex items-end gap-1 h-6">
-                {[0.4, 0.9, 0.3, 0.75, 0.5].map((val, idx) => (
-                  <motion.div 
-                    key={idx}
-                    animate={isSigning ? { height: ["6px", "24px", "6px"] } : { height: "6px" }}
-                    transition={{ duration: 1.2, repeat: Infinity, delay: idx * 0.15 }}
-                    className="w-1 bg-violet-400 rounded-full"
-                    style={{ height: '6px' }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT PANEL: Settings & Stats */}
-        <div className={`lg:col-span-1 bg-[#121215]/80 backdrop-blur-xl border border-white/5 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 ${isFullscreen ? 'opacity-30 pointer-events-none' : ''}`}>
-          <div className="space-y-6">
-            <div className="pb-4 border-b border-white/5">
-              <span className="text-xs font-bold tracking-wider text-text-secondary uppercase">Avatar Settings</span>
-            </div>
-
-            {/* High Contrast Mode */}
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-text-secondary flex items-center gap-2">
-                <Contrast className="w-4 h-4 text-sky-400" /> High Contrast Captions
-              </span>
-              <button 
-                onClick={() => setHighContrast(prev => !prev)}
-                className={`w-9 h-5 rounded-full transition-all relative ${highContrast ? 'bg-blue-500' : 'bg-zinc-700'}`}
-              >
-                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all ${highContrast ? 'left-4.5' : 'left-0.5'}`} />
-              </button>
-            </div>
-
-            {/* Signing speed controller */}
-            <div className="space-y-2.5">
-              <div className="flex justify-between text-xs text-text-secondary">
-                <span className="flex items-center gap-2"><Gauge className="w-4 h-4 text-violet-400" /> Signing Speed</span>
-                <span className="font-bold text-white">{signingSpeed.toFixed(1)}x</span>
-              </div>
-              <input 
-                type="range" 
-                min="0.5" 
-                max="2.0" 
-                step="0.1" 
-                value={signingSpeed} 
-                onChange={(e) => setSigningSpeed(parseFloat(e.target.value))}
-                className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-violet-400"
+          {/* Viewport Canvas (Rylo Avatar / MediaPipe Stickman / 3D Canvas) */}
+          <div className="flex-1 min-h-[360px] rounded-xl overflow-hidden relative border border-border-subtle/50 bg-black/40">
+            {viewMode === 'rylo' ? (
+              <RyloAvatarViewer
+                isSigning={isSigning}
+                currentWord={signTokens[activeWordIndex]?.word || ''}
+                targetSignLang={targetSignLang}
               />
-            </div>
+            ) : viewMode === 'mediapipe' ? (
+              <MediaPipeSkeletonViewer
+                isSigning={isSigning}
+                speed={signingSpeed}
+                currentWord={signTokens[activeWordIndex]?.word || ''}
+              />
+            ) : (
+              <AvatarScene
+                isSigning={isSigning}
+                speed={signingSpeed}
+                currentWord={signTokens[activeWordIndex]?.word || ''}
+                viewMode={viewMode}
+              />
+            )}
 
-            {/* Session Analytics */}
-            <div className="pt-4 border-t border-white/5 space-y-4">
-              <span className="text-[10px] font-bold tracking-wider text-text-secondary uppercase block">Session Analytics</span>
-              
-              <div className="bg-[#18181C] p-3.5 rounded-xl border border-white/5 space-y-3">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-text-muted">Signs Completed</span>
-                  <span className="font-mono font-bold text-white">{sessionWordCount}</span>
-                </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-text-muted">Accuracy Rate</span>
-                  <span className="font-mono font-bold text-emerald-400">99.8%</span>
-                </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-text-muted">Latency Delay</span>
-                  <span className="font-mono font-bold text-sky-400">~150ms</span>
-                </div>
+            {/* Overlay Active Word Badge */}
+            <div className="absolute bottom-4 left-4 z-20 pointer-events-none">
+              <div className="bg-bg-surface/85 backdrop-blur-md px-3.5 py-2 rounded-lg border border-border-subtle shadow-xl">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-accent-coral block">Active Gesture</span>
+                <span className="text-base font-bold text-text-primary font-display">
+                  {signTokens[activeWordIndex]?.symbol || (isSigning ? '[SIGNING...]' : '[READY]')}
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="mt-8 p-4 bg-gradient-to-br from-violet-500/10 to-blue-500/10 border border-violet-500/20 rounded-xl">
-            <h3 className="text-xs font-bold text-white flex items-center gap-1.5">
-              <Shield className="w-3.5 h-3.5 text-violet-400" /> Accessibility Compliance
-            </h3>
-            <p className="text-[10px] text-text-secondary mt-1 leading-relaxed">
-              Designed according to WCAG 2.1 accessibility criteria to ensure clear visual comprehension.
-            </p>
+          {/* Interactive Player Controls & Speed Slider */}
+          <div className="space-y-4 pt-2 border-t border-border-subtle z-10">
+            
+            {/* Playback Button Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                {isPlaying ? (
+                  <Button onClick={handleStop} variant="secondary" size="sm" icon={Pause}>
+                    Pause
+                  </Button>
+                ) : (
+                  <Button onClick={() => triggerSignTranslation()} variant="primary" size="sm" icon={Play}>
+                    Play Sign Sequence
+                  </Button>
+                )}
+
+                <button
+                  onClick={() => triggerSignTranslation()}
+                  className="p-2 rounded-lg bg-bg-elevated hover:bg-bg-surface border border-border-subtle text-text-secondary hover:text-text-primary transition-all"
+                  title="Replay"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+
+                <button
+                  onClick={() => setIsLooping(l => !l)}
+                  className={`p-2 rounded-lg border transition-all ${
+                    isLooping
+                      ? 'bg-accent-coral/15 text-accent-coral border-accent-coral/30'
+                      : 'bg-bg-elevated text-text-secondary border-border-subtle hover:text-text-primary'
+                  }`}
+                  title="Toggle Loop Playback"
+                >
+                  <Repeat className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Speed Slider */}
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Speed: {signingSpeed.toFixed(1)}x</span>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="2.0"
+                  step="0.25"
+                  value={signingSpeed}
+                  onChange={(e) => setSigningSpeed(parseFloat(e.target.value))}
+                  className="w-28 accent-accent-coral bg-bg-elevated border border-border-subtle h-2 rounded-lg cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Sign Token Breakdown Sequence Bar (Rylo Style Token Scrubbing) */}
+            {signTokens.length > 0 && (
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider block">
+                  Sign Sequence Breakdown ({targetSignLang}):
+                </span>
+                <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto pr-1">
+                  {signTokens.map((t, idx) => (
+                    <button
+                      key={t.id}
+                      onClick={() => { setActiveWordIndex(idx); setIsSigning(true); }}
+                      className={`px-2.5 py-1 rounded text-xs font-mono font-bold border transition-all ${
+                        idx === activeWordIndex
+                          ? 'bg-accent-coral text-bg-base border-accent-coral shadow'
+                          : 'bg-bg-elevated text-text-secondary border-border-subtle hover:border-accent-coral/30'
+                      }`}
+                    >
+                      {t.symbol}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
+
         </div>
 
       </div>

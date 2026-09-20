@@ -49,9 +49,9 @@ export default function LectureSummarizer() {
         <div className="glass-panel p-6 rounded-xl text-center space-y-4">
           <Brain className="w-10 h-10 text-accent-coral mx-auto animate-pulse" />
           <div>
-            <h3 className="font-bold text-text-primary font-display text-sm">Generate AI Study Kit</h3>
+            <h3 className="font-bold text-text-primary font-display text-sm">Generate Study Notes</h3>
             <p className="text-xs text-text-secondary mt-1">
-              Analyze the lecture transcript to generate a summary, key learning points, and test-prep exam questions.
+              Analyze the lecture transcript to generate an AI summary, key takeaways, and practice questions.
             </p>
           </div>
           <Button
@@ -61,11 +61,11 @@ export default function LectureSummarizer() {
             className="w-full"
             icon={Sparkles}
           >
-            {hasContent ? 'Analyze Lecture' : 'Capture More Speech First'}
+            {hasContent ? 'Generate Notes' : 'Start Lecture First'}
           </Button>
           {!hasContent && (
             <p className="text-[10px] text-text-muted">
-              (Requires at least 50 characters of active transcript)
+              (Speech transcript required)
             </p>
           )}
         </div>
@@ -97,7 +97,7 @@ export default function LectureSummarizer() {
           <div className="glass-panel p-6 rounded-xl">
             <div className="flex items-center gap-2 border-b border-border-subtle pb-3 mb-4">
               <Brain className="w-5 h-5 text-accent-coral" />
-              <h3 className="font-bold text-text-primary text-sm font-display">AI Lecture Summary</h3>
+              <h3 className="font-bold text-text-primary text-sm font-display">Lecture Summary</h3>
             </div>
             <div className="space-y-1">
               {renderMarkdown(currentSummary)}
@@ -126,7 +126,7 @@ export default function LectureSummarizer() {
             <div className="glass-panel p-6 rounded-xl">
               <div className="flex items-center gap-2 border-b border-border-subtle pb-3 mb-4">
                 <HelpCircle className="w-5 h-5 text-accent-coral" />
-                <h3 className="font-bold text-text-primary text-sm font-display">Exam Preparation Q&A</h3>
+                <h3 className="font-bold text-text-primary text-sm font-display">Practice Questions</h3>
               </div>
               <ol className="space-y-3">
                 {examQuestions.map((question, idx) => (
@@ -147,7 +147,7 @@ export default function LectureSummarizer() {
               size="sm"
               icon={Sparkles}
             >
-              Regenerate Summary
+              Regenerate
             </Button>
           </div>
         </div>

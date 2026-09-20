@@ -34,7 +34,7 @@ export default function AskAI() {
       <div className="flex items-center gap-2 px-5 py-3 border-b border-border-subtle bg-bg-surface/50 backdrop-blur-sm z-10 shrink-0">
         <Bot className="w-5 h-5 text-accent-coral" />
         <div>
-          <h3 className="font-bold text-text-primary text-xs font-display">Signify AI Lecture Tutor</h3>
+          <h3 className="font-bold text-text-primary text-xs font-display">AI Assistant</h3>
           <p className="text-[10px] text-text-secondary">Ask questions in real-time about what was said</p>
         </div>
       </div>
@@ -48,8 +48,8 @@ export default function AskAI() {
               <p className="text-xs text-text-primary font-bold">Ask anything about the lecture</p>
               <p className="text-[10px] text-text-secondary mt-1">
                 {hasTranscript 
-                  ? "Type a question below. The AI tutor has full access to the lecture captions."
-                  : "Start recording or try the demo first so the tutor has text to reference."}
+                  ? "Type a question below. The AI assistant can answer based on the lecture material."
+                  : "Start recording or try the demo first to ask questions."}
               </p>
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function AskAI() {
           disabled={isAiTyping || !hasTranscript}
           placeholder={
             hasTranscript 
-              ? "Ask a question (e.g. 'Explain hooks in React')..." 
+              ? "Ask a question about this lecture..." 
               : "Start lecture first to ask questions..."
           }
           className="flex-1 bg-bg-elevated border border-border-subtle hover:border-accent-coral/20 focus:border-accent-coral focus:ring-1 focus:ring-accent-coral/30 rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-text-muted focus:outline-none disabled:opacity-50 disabled:pointer-events-none transition-colors"
