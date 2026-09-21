@@ -15,19 +15,19 @@ import toast from 'react-hot-toast';
 
 // Target Sign Languages supported
 const SIGN_LANGUAGES = [
-  { code: 'ASL', name: 'American Sign Language (ASL)', flag: '🇺🇸' },
-  { code: 'ISL', name: 'Indian Sign Language (ISL)', flag: '🇮🇳' },
-  { code: 'BSL', name: 'British Sign Language (BSL)', flag: '🇬🇧' },
-  { code: 'IS', name: 'International Sign (IS)', flag: '🌐' }
+  { code: 'ASL', name: 'American Sign Language (ASL)', flag: 'US' },
+  { code: 'ISL', name: 'Indian Sign Language (ISL)', flag: 'IN' },
+  { code: 'BSL', name: 'British Sign Language (BSL)', flag: 'GB' },
+  { code: 'IS', name: 'International Sign (IS)', flag: 'INT' }
 ];
 
 // Spoken Source Languages supported
 const SPOKEN_LANGUAGES = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'ta', name: 'Tamil (தமிழ்)', flag: '🇮🇳' },
-  { code: 'es', name: 'Spanish (Español)', flag: '🇪🇸' },
-  { code: 'hi', name: 'Hindi (हिंदी)', flag: '🇮🇳' },
-  { code: 'fr', name: 'French (Français)', flag: '🇫🇷' }
+  { code: 'en', name: 'English', flag: 'US' },
+  { code: 'ta', name: 'Tamil (தமிழ்)', flag: 'IN' },
+  { code: 'es', name: 'Spanish (Español)', flag: 'ES' },
+  { code: 'hi', name: 'Hindi (हिंदी)', flag: 'IN' },
+  { code: 'fr', name: 'French (Français)', flag: 'FR' }
 ];
 
 // Sample phrases for quick translation testing
@@ -182,62 +182,56 @@ export default function SignAvatar() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-bg-base p-4 md:p-8 flex flex-col justify-between select-none">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 min-h-[calc(100vh-8rem)] pb-16 select-none">
       
       {/* 1. Header & Rylo Language Pair Switcher */}
       <div className="space-y-4 mb-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-widest text-accent-coral bg-accent-coral/10 border border-accent-coral/20 uppercase rounded-full">
-                Rylo-Powered Engine
-              </span>
-              <span className="px-2.5 py-0.5 text-[10px] font-bold tracking-widest text-accent-blue-soft bg-accent-blue/10 border border-accent-blue/20 uppercase rounded-full flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> Real-time Sign MT
-              </span>
+            <div className="inline-flex items-center gap-2 bg-[#2B124C] text-[#FBE4D8] border-2 border-[#522B5B] rounded-full px-3 py-1 text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000000] mb-2">
+              <Sparkles className="w-3.5 h-3.5 text-[#DFB6B2]" />
+              <span>RYLO AI SIGN ENGINE</span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-text-primary font-display mt-2">
-              Sign Language Translator
+            <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight font-display text-[#FBE4D8]">
+              Sign Language Avatar
             </h1>
-            <p className="text-text-secondary text-xs">
-              Translate spoken classroom text into continuous sign language gestures in real-time.
+            <p className="text-[#DFB6B2] text-xs sm:text-sm font-bold mt-1">
+              Translate spoken classroom text into continuous sign language gestures in real time.
             </p>
           </div>
-
         </div>
 
-        {/* Rylo-style Language Bar */}
-        <div className="bg-bg-surface border border-border-subtle rounded-xl p-3 flex flex-wrap items-center justify-between gap-4">
+        {/* Language Bar */}
+        <div className="bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-[4px_4px_0px_#000000]">
           {/* Spoken Language Dropdown */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase text-text-secondary tracking-wider">Spoken Input:</span>
+            <span className="text-xs font-black uppercase text-[#FBE4D8] tracking-wider">Spoken Input:</span>
             <select
               value={spokenLang}
               onChange={(e) => setSpokenLang(e.target.value)}
-              className="bg-bg-elevated border border-border-subtle rounded-lg px-3 py-1.5 text-xs text-text-primary focus:outline-none focus:border-accent-coral cursor-pointer"
+              className="bg-[#190019] border-2 border-[#522B5B] rounded-full px-3 py-1.5 text-xs font-black text-[#FBE4D8] shadow-[2px_2px_0px_#000000] focus:outline-none cursor-pointer"
             >
               {SPOKEN_LANGUAGES.map((l) => (
-                <option key={l.code} value={l.code}>{l.flag} {l.name}</option>
+                <option key={l.code} value={l.code}>[{l.flag}] {l.name}</option>
               ))}
             </select>
           </div>
 
           {/* Target Sign Language Selector */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase text-text-secondary tracking-wider">Target Sign Language:</span>
-            <div className="flex gap-1">
+            <span className="text-xs font-black uppercase text-[#FBE4D8] tracking-wider">Target Sign Language:</span>
+            <div className="flex flex-wrap gap-1.5">
               {SIGN_LANGUAGES.map((sl) => (
                 <button
                   key={sl.code}
                   onClick={() => setTargetSignLang(sl.code)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border-2 transition-all shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 ${
                     targetSignLang === sl.code
-                      ? 'bg-accent-coral/15 text-accent-coral border-accent-coral/30'
-                      : 'bg-bg-elevated text-text-secondary border-border-subtle hover:text-text-primary'
+                      ? 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2]'
+                      : 'bg-[#522B5B] text-[#FBE4D8] border-[#854F6C] hover:bg-[#854F6C]'
                   }`}
                 >
-                  <span>{sl.flag}</span>
-                  <span>{sl.code}</span>
+                  <span>[{sl.flag}] {sl.code}</span>
                 </button>
               ))}
             </div>
@@ -246,40 +240,40 @@ export default function SignAvatar() {
       </div>
 
       {/* 2. Main Rylo Split Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* LEFT COLUMN (5 cols): Input Card & Sample Presets */}
         <div className="lg:col-span-5 space-y-6 flex flex-col justify-between">
           
           {/* Main Translation Text Box */}
-          <div className="bg-bg-surface border border-border-subtle rounded-xl p-6 space-y-4 shadow-lg flex-1 flex flex-col justify-between">
+          <div className="bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl p-6 space-y-4 shadow-[4px_4px_0px_#000000] flex-1 flex flex-col justify-between">
             <div className="space-y-3">
-              <div className="flex justify-between items-center pb-2 border-b border-border-subtle">
-                <span className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
-                  <Languages className="w-4 h-4 text-accent-coral" /> Spoken Text Input
+              <div className="flex justify-between items-center pb-2 border-b-2 border-[#522B5B]">
+                <span className="text-xs font-black uppercase tracking-wider text-[#FBE4D8] flex items-center gap-2">
+                  <Languages className="w-4 h-4 text-[#DFB6B2]" /> Spoken Text Input
                 </span>
-                <span className="text-[10px] text-text-muted">{inputText.length} characters</span>
+                <span className="text-xs font-bold text-[#DFB6B2]">{inputText.length} chars</span>
               </div>
 
               <textarea
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="Type or paste lecture text here (e.g. 'Photosynthesis converts sunlight into energy')..."
-                className="w-full h-36 bg-bg-elevated border border-border-subtle hover:border-accent-coral/20 focus:border-accent-coral focus:ring-1 focus:ring-accent-coral/30 rounded-lg p-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none resize-none transition-colors"
+                className="w-full h-36 bg-[#190019] border-2 border-[#522B5B] rounded-xl p-3 text-sm font-bold text-[#FBE4D8] placeholder:text-[#DFB6B2]/60 focus:outline-none resize-none transition-colors"
               />
 
               {/* Active Sentence & Word-by-Word Highlight Display */}
               {activeSentence && (
-                <div className="bg-black/20 p-3 rounded-lg border border-border-subtle space-y-1">
-                  <span className="text-[9px] uppercase font-bold text-accent-coral tracking-wider">Active Sign Playback Transcript</span>
-                  <div className="flex flex-wrap gap-1.5 text-xs font-semibold">
+                <div className="bg-[#522B5B] p-3 rounded-xl border-2 border-[#854F6C] shadow-[2px_2px_0px_#000000] space-y-1">
+                  <span className="text-[10px] uppercase font-black text-[#DFB6B2] tracking-wider block">Active Sign Playback</span>
+                  <div className="flex flex-wrap gap-1.5 text-xs font-black">
                     {activeSentence.split(/\s+/).map((w, idx) => (
                       <span
                         key={idx}
-                        className={`px-1.5 py-0.5 rounded transition-all ${
+                        className={`px-2 py-0.5 rounded-full border-2 transition-all ${
                           idx === activeWordIndex
-                            ? 'bg-accent-coral text-bg-base font-bold scale-110 shadow'
-                            : 'text-text-secondary bg-bg-elevated'
+                            ? 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2] scale-105 shadow-[2px_2px_0px_#000000]'
+                            : 'text-[#FBE4D8] bg-[#2B124C] border-[#522B5B]'
                         }`}
                       >
                         {w}
@@ -291,31 +285,30 @@ export default function SignAvatar() {
             </div>
 
             {/* Action Buttons Row */}
-            <div className="flex items-center gap-3 pt-3 border-t border-border-subtle">
-              <Button
+            <div className="flex items-center gap-3 pt-3 border-t-2 border-[#522B5B]">
+              <button
                 onClick={() => triggerSignTranslation()}
-                variant="primary"
-                className="flex-1"
-                icon={Send}
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-[#DFB6B2] text-[#190019] hover:bg-[#FBE4D8] border-2 border-[#DFB6B2] rounded-full px-5 py-2.5 font-black text-xs uppercase tracking-wider shadow-[3px_3px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 transition-colors"
               >
-                Translate to Sign
-              </Button>
+                <Send className="w-4 h-4" />
+                <span>Translate to Sign</span>
+              </button>
 
               <button
                 onClick={toggleMic}
-                className={`p-2.5 rounded-lg border text-xs font-bold transition-all flex items-center gap-1.5 ${
+                className={`p-2.5 rounded-full border-2 text-xs font-black transition-all shadow-[2px_2px_0px_#000000] ${
                   isListening
-                    ? 'bg-red-500/15 text-red-400 border-red-500/30 animate-pulse'
-                    : 'bg-bg-elevated text-text-secondary border-border-subtle hover:text-text-primary'
+                    ? 'bg-[#6C151E] text-white border-[#6C151E]'
+                    : 'bg-[#522B5B] text-[#FBE4D8] border-[#854F6C] hover:bg-[#854F6C]'
                 }`}
                 title="Voice Input Mic"
               >
-                {isListening ? <Mic className="w-4 h-4 text-red-500" /> : <MicOff className="w-4 h-4" />}
+                {isListening ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
               </button>
 
               <button
                 onClick={() => { setInputText(''); handleStop(); }}
-                className="p-2.5 rounded-lg bg-bg-elevated hover:bg-bg-surface border border-border-subtle text-text-secondary hover:text-text-primary text-xs font-bold"
+                className="px-4 py-2 rounded-full bg-[#522B5B] hover:bg-[#854F6C] border-2 border-[#854F6C] text-[#FBE4D8] text-xs font-black uppercase shadow-[2px_2px_0px_#000000] transition-colors"
                 title="Clear input"
               >
                 Clear
@@ -324,8 +317,8 @@ export default function SignAvatar() {
           </div>
 
           {/* Sample Phrases Preset Library */}
-          <div className="bg-bg-surface border border-border-subtle rounded-xl p-4 space-y-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-text-secondary block">
+          <div className="bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl p-5 space-y-3 shadow-[4px_4px_0px_#000000]">
+            <span className="text-xs font-black uppercase tracking-wider text-[#FBE4D8] block">
               Quick Test Phrases (Click to Sign)
             </span>
             <div className="flex flex-wrap gap-2">
@@ -333,7 +326,7 @@ export default function SignAvatar() {
                 <button
                   key={idx}
                   onClick={() => selectPreset(phrase)}
-                  className="px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-accent-coral/10 hover:border-accent-coral/30 border border-border-subtle text-xs text-text-secondary hover:text-accent-coral font-medium transition-colors text-left"
+                  className="px-3 py-1.5 rounded-full bg-[#190019] hover:bg-[#522B5B] border-2 border-[#522B5B] text-xs text-[#FBE4D8] font-bold transition-all shadow-[2px_2px_0px_#000000] text-left"
                 >
                   "{phrase}"
                 </button>
@@ -343,90 +336,37 @@ export default function SignAvatar() {
         </div>
 
         {/* RIGHT COLUMN (7 cols): Rylo Sign Viewer & Player Controls */}
-        <div className="lg:col-span-7 bg-bg-surface border border-border-subtle rounded-xl p-6 flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden">
+        <div className="lg:col-span-7 bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl p-6 flex flex-col justify-between space-y-6 shadow-[4px_4px_0px_#000000] relative overflow-hidden">
           
-          {/* Top Viewer Controls: Mode Switcher Tabs */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle pb-4 z-10">
+          {/* Top Viewer Controls: Mode Switcher Tabs (Only Rylo Avatar) */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b-2 border-[#522B5B] pb-4 z-10">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-accent-coral animate-ping" />
-              <span className="font-bold text-text-primary text-sm font-display uppercase tracking-wider">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#DFB6B2]" />
+              <span className="font-black text-[#FBE4D8] text-sm uppercase tracking-wider font-display">
                 {targetSignLang} Visual Output
               </span>
             </div>
 
-            {/* Rylo View Modes: Rylo Web Avatar | MediaPipe Stickman | 3D Avatar | AI Skeleton */}
-            <div className="flex gap-1 bg-bg-elevated p-1 rounded-lg border border-border-subtle">
-              <button
-                onClick={() => setViewMode('rylo')}
-                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-                  viewMode === 'rylo'
-                    ? 'bg-accent-coral text-bg-base shadow'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                Rylo Avatar
-              </button>
-              <button
-                onClick={() => setViewMode('mediapipe')}
-                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-                  viewMode === 'mediapipe'
-                    ? 'bg-accent-coral text-bg-base shadow'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                MediaPipe Stickman
-              </button>
-              <button
-                onClick={() => setViewMode('3d')}
-                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-                  viewMode === '3d'
-                    ? 'bg-accent-coral text-bg-base shadow'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                3D Canvas
-              </button>
-              <button
-                onClick={() => setViewMode('skeleton')}
-                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-                  viewMode === 'skeleton'
-                    ? 'bg-accent-coral text-bg-base shadow'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                AI Skeleton
-              </button>
+            {/* Rylo View Mode Badge */}
+            <div className="inline-flex items-center gap-2 bg-[#522B5B] text-[#FBE4D8] border-2 border-[#854F6C] rounded-full px-3.5 py-1 text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000000]">
+              <span className="w-2 h-2 rounded-full bg-[#0F3D3A]" />
+              <span>RYLO AVATAR</span>
             </div>
           </div>
 
-          {/* Viewport Canvas (Rylo Avatar / MediaPipe Stickman / 3D Canvas) */}
-          <div className="flex-1 min-h-[360px] rounded-xl overflow-hidden relative border border-border-subtle/50 bg-black/40">
-            {viewMode === 'rylo' ? (
-              <RyloAvatarViewer
-                isSigning={isSigning}
-                currentWord={signTokens[activeWordIndex]?.word || ''}
-                targetSignLang={targetSignLang}
-              />
-            ) : viewMode === 'mediapipe' ? (
-              <MediaPipeSkeletonViewer
-                isSigning={isSigning}
-                speed={signingSpeed}
-                currentWord={signTokens[activeWordIndex]?.word || ''}
-              />
-            ) : (
-              <AvatarScene
-                isSigning={isSigning}
-                speed={signingSpeed}
-                currentWord={signTokens[activeWordIndex]?.word || ''}
-                viewMode={viewMode}
-              />
-            )}
+          {/* Viewport Canvas (Dedicated Rylo Avatar Viewer) */}
+          <div className="flex-1 min-h-[380px] rounded-2xl overflow-hidden relative border-2 border-[#522B5B] bg-neutral-950 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]">
+            <RyloAvatarViewer
+              isSigning={isSigning}
+              currentWord={signTokens[activeWordIndex]?.word || ''}
+              targetSignLang={targetSignLang}
+            />
 
             {/* Overlay Active Word Badge */}
             <div className="absolute bottom-4 left-4 z-20 pointer-events-none">
-              <div className="bg-bg-surface/85 backdrop-blur-md px-3.5 py-2 rounded-lg border border-border-subtle shadow-xl">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-accent-coral block">Active Gesture</span>
-                <span className="text-base font-bold text-text-primary font-display">
+              <div className="bg-[#2B124C] border-2 border-[#522B5B] px-4 py-2 rounded-xl shadow-[3px_3px_0px_#000000]">
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#DFB6B2] block">Active Gesture</span>
+                <span className="text-base font-black text-[#FBE4D8] font-display uppercase">
                   {signTokens[activeWordIndex]?.symbol || (isSigning ? '[SIGNING...]' : '[READY]')}
                 </span>
               </div>
@@ -434,24 +374,32 @@ export default function SignAvatar() {
           </div>
 
           {/* Interactive Player Controls & Speed Slider */}
-          <div className="space-y-4 pt-2 border-t border-border-subtle z-10">
+          <div className="space-y-4 pt-2 border-t-2 border-[#522B5B] z-10">
             
             {/* Playback Button Bar */}
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 {isPlaying ? (
-                  <Button onClick={handleStop} variant="secondary" size="sm" icon={Pause}>
-                    Pause
-                  </Button>
+                  <button 
+                    onClick={handleStop}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 border-[#854F6C] bg-[#522B5B] text-[#FBE4D8] font-black text-xs uppercase shadow-[2px_2px_0px_#000000] hover:bg-[#854F6C] transition-colors"
+                  >
+                    <Pause className="w-4 h-4" />
+                    <span>Pause</span>
+                  </button>
                 ) : (
-                  <Button onClick={() => triggerSignTranslation()} variant="primary" size="sm" icon={Play}>
-                    Play Sign Sequence
-                  </Button>
+                  <button 
+                    onClick={() => triggerSignTranslation()}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-[#DFB6B2] bg-[#DFB6B2] text-[#190019] font-black text-xs uppercase shadow-[3px_3px_0px_#000000] hover:bg-[#FBE4D8] transition-colors"
+                  >
+                    <Play className="w-4 h-4 fill-current" />
+                    <span>Play Sequence</span>
+                  </button>
                 )}
 
                 <button
                   onClick={() => triggerSignTranslation()}
-                  className="p-2 rounded-lg bg-bg-elevated hover:bg-bg-surface border border-border-subtle text-text-secondary hover:text-text-primary transition-all"
+                  className="p-2.5 rounded-full border-2 border-[#854F6C] bg-[#522B5B] text-[#FBE4D8] hover:bg-[#854F6C] transition-all shadow-[2px_2px_0px_#000000]"
                   title="Replay"
                 >
                   <RotateCcw className="w-4 h-4" />
@@ -459,10 +407,10 @@ export default function SignAvatar() {
 
                 <button
                   onClick={() => setIsLooping(l => !l)}
-                  className={`p-2 rounded-lg border transition-all ${
+                  className={`p-2.5 rounded-full border-2 transition-all shadow-[2px_2px_0px_#000000] ${
                     isLooping
-                      ? 'bg-accent-coral/15 text-accent-coral border-accent-coral/30'
-                      : 'bg-bg-elevated text-text-secondary border-border-subtle hover:text-text-primary'
+                      ? 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2]'
+                      : 'bg-[#522B5B] text-[#FBE4D8] border-[#854F6C] hover:bg-[#854F6C]'
                   }`}
                   title="Toggle Loop Playback"
                 >
@@ -472,7 +420,7 @@ export default function SignAvatar() {
 
               {/* Speed Slider */}
               <div className="flex items-center gap-3">
-                <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Speed: {signingSpeed.toFixed(1)}x</span>
+                <span className="text-xs font-bold text-[#DFB6B2] uppercase tracking-wider">Speed: {signingSpeed.toFixed(1)}x</span>
                 <input
                   type="range"
                   min="0.5"
@@ -480,15 +428,15 @@ export default function SignAvatar() {
                   step="0.25"
                   value={signingSpeed}
                   onChange={(e) => setSigningSpeed(parseFloat(e.target.value))}
-                  className="w-28 accent-accent-coral bg-bg-elevated border border-border-subtle h-2 rounded-lg cursor-pointer"
+                  className="w-28 accent-[#DFB6B2] bg-[#190019] border border-[#522B5B] h-2 rounded-lg cursor-pointer"
                 />
               </div>
             </div>
 
-            {/* Sign Token Breakdown Sequence Bar (Rylo Style Token Scrubbing) */}
+            {/* Sign Token Breakdown Sequence Bar */}
             {signTokens.length > 0 && (
               <div className="space-y-1.5">
-                <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider block">
+                <span className="text-[10px] font-bold text-[#DFB6B2] uppercase tracking-wider block">
                   Sign Sequence Breakdown ({targetSignLang}):
                 </span>
                 <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto pr-1">
@@ -498,8 +446,8 @@ export default function SignAvatar() {
                       onClick={() => { setActiveWordIndex(idx); setIsSigning(true); }}
                       className={`px-2.5 py-1 rounded text-xs font-mono font-bold border transition-all ${
                         idx === activeWordIndex
-                          ? 'bg-accent-coral text-bg-base border-accent-coral shadow'
-                          : 'bg-bg-elevated text-text-secondary border-border-subtle hover:border-accent-coral/30'
+                          ? 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2] shadow'
+                          : 'bg-[#190019] text-[#DFB6B2] border-[#522B5B] hover:border-[#DFB6B2]'
                       }`}
                     >
                       {t.symbol}

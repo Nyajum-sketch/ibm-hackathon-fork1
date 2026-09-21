@@ -23,7 +23,7 @@ export default function SoundHapticIndicator({ isListening }) {
             title: 'Your Name Called!',
             desc: 'Professor mentioned: "Alex, what do you think?"',
             intensity: 'HIGH',
-            color: 'text-red-400 bg-red-500/10 border-red-500/30 shadow-red-500/20'
+            color: 'text-[#DFB6B2] bg-[#6C151E] border-2 border-[#DFB6B2]'
           };
         } else if (chance > 0.83) {
           alertObj = {
@@ -32,7 +32,7 @@ export default function SoundHapticIndicator({ isListening }) {
             title: 'Classroom Laughter Detected',
             desc: 'Auditory cue: Class is reacting to a joke.',
             intensity: 'MEDIUM',
-            color: 'text-amber-400 bg-amber-500/10 border-amber-500/30 shadow-amber-500/20'
+            color: 'text-[#FBE4D8] bg-[#522B5B] border-2 border-[#854F6C]'
           };
         } else {
           alertObj = {
@@ -41,12 +41,12 @@ export default function SoundHapticIndicator({ isListening }) {
             title: 'Classroom Bell / Door Knock',
             desc: 'Auditory cue: Environmental sound detected.',
             intensity: 'LOW',
-            color: 'text-blue-400 bg-blue-500/10 border-blue-500/30 shadow-blue-500/20'
+            color: 'text-[#FBE4D8] bg-[#2B124C] border-2 border-[#522B5B]'
           };
         }
 
         setActiveAlert(alertObj);
-        setHapticCount(prev => prev + 1);
+        setHapticCount(c => c + 1);
 
         // Trigger browser haptic vibration API if supported on device!
         if (navigator.vibrate) {
@@ -70,16 +70,16 @@ export default function SoundHapticIndicator({ isListening }) {
           initial={{ opacity: 0, y: -20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -10, scale: 0.95 }}
-          className={`p-3.5 rounded-xl border backdrop-blur-xl shadow-2xl flex items-start justify-between gap-3 ${activeAlert.color} animate-pulse-glow`}
+          className={`p-3.5 rounded-xl border-2 shadow-2xl flex items-start justify-between gap-3 ${activeAlert.color}`}
         >
           <div className="flex gap-3 items-center">
-            <div className="p-2 rounded-lg bg-bg-base/40 border border-white/10 shrink-0">
-              <Bell className="w-4 h-4 animate-bounce" />
+            <div className="p-2 rounded-lg bg-neutral-100 border border-[#190019]/10 shrink-0">
+              <Bell className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h4 className="text-xs font-bold font-display uppercase tracking-wider">{activeAlert.title}</h4>
-                <span className="px-1.5 py-0.2 text-[9px] font-extrabold uppercase rounded bg-white/10 border border-white/10">
+                <span className="px-1.5 py-0.2 text-[9px] font-black uppercase rounded bg-[#190019]/10 border border-[#190019]/10">
                   {activeAlert.intensity} HAPTIC
                 </span>
               </div>
@@ -89,7 +89,7 @@ export default function SoundHapticIndicator({ isListening }) {
 
           <button
             onClick={() => setActiveAlert(null)}
-            className="p-1 rounded-md hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+            className="p-1 rounded-md hover:bg-black/20 text-[#DFB6B2] hover:text-[#FBE4D8] transition-colors"
           >
             <X className="w-3.5 h-3.5" />
           </button>

@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AudioLines, Menu, X, Radio } from 'lucide-react';
+import { 
+  AudioLines, 
+  Menu, 
+  X, 
+  Radio, 
+  Video, 
+  Accessibility, 
+  LayoutDashboard, 
+  History, 
+  Settings, 
+  ArrowUpRight,
+  Sparkles
+} from 'lucide-react';
 import { useCaptionStore } from '../../store/useCaptionStore';
 import { AddonNavbarEntry } from '../../addons';
 
@@ -9,130 +21,142 @@ export default function Navbar() {
   const { isListening } = useCaptionStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Classroom', path: '/classroom' },
-    { name: 'Dashboard', path: '/dashboard' },
-    { name: 'History', path: '/history' },
-    { name: 'Settings', path: '/settings' },
+  const subNavItems = [
+    { name: 'CLASSROOM', path: '/classroom', icon: Video },
+    { name: 'AI AVATAR', path: '/avatar', icon: Accessibility },
+    { name: 'DASHBOARD', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'HISTORY', path: '/history', icon: History },
+    { name: 'SETTINGS', path: '/settings', icon: Settings },
   ];
 
   return (
-    <nav className="sticky top-0 z-40 w-full bg-bg-base/85 backdrop-blur-md border-b border-border-subtle">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <NavLink to="/" className="flex items-center gap-2 group">
-            <div className="p-1.5 bg-accent-coral/10 text-accent-coral rounded-lg border border-accent-coral/20 group-hover:bg-accent-coral group-hover:text-bg-base transition-all duration-300">
-              <AudioLines className="w-5 h-5 animate-pulse" />
-            </div>
-            <span className="text-xl font-bold font-display text-text-primary tracking-wide">
-              SIGNIFY<span className="text-accent-coral">AI</span>
+    <header className="w-full bg-[#190019] select-none z-40 relative">
+      
+      {/* TIER 1: BRAND LOGO & TOP ACTIONS */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="flex items-center justify-between gap-4">
+          
+          {/* Left: Brand Logo & Hackathon Tag */}
+          <div className="flex items-center gap-3">
+            <NavLink to="/" className="flex items-center gap-2 group">
+              <div className="flex items-center gap-2 bg-[#2B124C] text-[#FBE4D8] px-3.5 py-1.5 rounded-full border-2 border-[#522B5B] shadow-[2px_2px_0px_#000000]">
+                <AudioLines className="w-4 h-4 text-[#DFB6B2]" />
+                <span className="font-display font-black text-lg tracking-tight uppercase">
+                  SIGNIFY<span className="text-[#DFB6B2]">AI</span>
+                </span>
+              </div>
+            </NavLink>
+
+            <span className="hidden sm:inline-flex items-center bg-[#522B5B] text-[#FBE4D8] border-2 border-[#854F6C] rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-wider shadow-[2px_2px_0px_#000000]">
+              ( WE ARE SIGNIFY AI )
             </span>
-          </NavLink>
+          </div>
 
-          {/* Desktop Nav - Only show on Landing since Sidebar handles the rest */}
-          <div className="hidden md:flex items-center gap-6">
-            {location.pathname === '/' && (
-              <div className="flex gap-1">
-              {navItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                return (
-                  <NavLink
-                    key={item.name}
-                    to={item.path}
-                    className={({ isActive }) =>
-                      `relative px-3 py-2 text-sm font-semibold transition-colors duration-200 ${
-                        isActive ? 'text-accent-coral' : 'text-text-secondary hover:text-text-primary'
-                      }`
-                    }
-                  >
-                    {item.name}
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeNavbarTab"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-coral"
-                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                  </NavLink>
-                );
-              })}
-            </div>
-            )}
-
-            {/* Session Indicator */}
+          {/* Right: Actions, Recording Indicator, Addons & Quick Launch */}
+          <div className="hidden md:flex items-center gap-3">
+            
+            {/* Session Recording Indicator */}
             {isListening && (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold animate-pulse-glow">
-                <Radio className="w-4 h-4 text-red-500" />
-                <span>Recording Live</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#6C151E] text-[#FBE4D8] border-2 border-[#854F6C] text-xs font-black shadow-[2px_2px_0px_#000000]">
+                <Radio className="w-3.5 h-3.5 text-[#DFB6B2]" />
+                <span className="uppercase tracking-wider text-[10px]">LIVE RECORDING</span>
               </div>
             )}
 
-            {/* Addon Entry Point */}
+            {/* Teacher / Student Addon Controls */}
             <AddonNavbarEntry />
+
+            {/* Quick Launch CTA Button */}
+            <button 
+              onClick={() => navigate('/classroom')}
+              className="flex items-center gap-1.5 bg-[#DFB6B2] text-[#190019] hover:bg-[#FBE4D8] border-2 border-[#DFB6B2] rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider shadow-[3px_3px_0px_#000000] transition-colors"
+            >
+              <span>LAUNCH CLASSROOM</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center gap-4">
+          {/* Mobile menu trigger */}
+          <div className="flex md:hidden items-center gap-2">
             {isListening && (
-              <div className="w-3 h-3 bg-red-500 rounded-full animate-ping" />
+              <span className="w-2.5 h-2.5 bg-[#6C151E] rounded-full" />
             )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-surface border border-transparent hover:border-border-subtle border"
+              className="p-2 bg-[#2B124C] text-[#FBE4D8] border-2 border-[#522B5B] rounded-xl shadow-[2px_2px_0px_#000000]"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
+
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* TIER 2: SUBNAV PILL CARDS ROW */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+        <nav className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
+          {subNavItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            const Icon = item.icon;
+
+            return (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                className={
+                  `flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl border-2 text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-150 ${
+                    isActive
+                      ? 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2] shadow-[3px_3px_0px_#000000] scale-[1.02]'
+                      : 'bg-[#2B124C] text-[#FBE4D8] border-[#522B5B] hover:bg-[#522B5B] hover:border-[#DFB6B2] shadow-[3px_3px_0px_#190019] active:translate-x-[2px] active:translate-y-[2px]'
+                  }`
+                }
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'text-[#190019]' : 'text-[#DFB6B2]'}`} />
+                <span>{item.name}</span>
+              </NavLink>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* DIVIDER: THIN SOLID PLUM LINE */}
+      <div className="w-full h-[2px] bg-[#522B5B] mt-3" />
+
+      {/* Mobile Menu Dropdown */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="md:hidden border-b border-border-subtle bg-bg-surface"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="md:hidden bg-[#2B124C] border-b-2 border-[#522B5B] px-4 py-4 space-y-2 shadow-[0_8px_0_#190019]"
           >
-            <div className="px-4 py-4 space-y-2">
-              {navItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                return (
-                  <NavLink
-                    key={item.name}
-                    to={item.path}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`block px-4 py-2.5 rounded-lg text-base font-semibold transition-all ${
-                      isActive
-                        ? 'bg-accent-coral/10 text-accent-coral border-l-2 border-accent-coral'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-bg-elevated'
-                    }`}
-                  >
-                    {item.name}
-                  </NavLink>
-                );
-              })}
-              {isListening && (
-                <div className="flex items-center gap-2 px-4 py-3 mx-4 rounded-lg bg-red-500/10 text-red-400 text-sm font-semibold">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-                  </span>
-                  <span>Recording Live</span>
-                </div>
-              )}
-              <div className="pt-2 border-t border-border-subtle px-4">
-                <AddonNavbarEntry />
-              </div>
+            {subNavItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              return (
+                <NavLink
+                  key={item.name}
+                  to={item.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 font-black text-sm uppercase ${
+                    isActive ? 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2]' : 'bg-[#190019] text-[#FBE4D8] border-[#522B5B]'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{item.name}</span>
+                </NavLink>
+              );
+            })}
+            <div className="pt-2 border-t-2 border-[#522B5B]">
+              <AddonNavbarEntry />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+
+    </header>
   );
 }

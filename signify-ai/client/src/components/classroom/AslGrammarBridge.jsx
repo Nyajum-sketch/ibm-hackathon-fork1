@@ -40,43 +40,43 @@ export default function AslGrammarBridge({ currentTranscript = "" }) {
   const aslSentence = translateToAslSyntax(currentTranscript);
 
   return (
-    <div className="bg-gradient-to-r from-accent-blue/10 via-bg-surface to-accent-coral/10 border border-accent-coral/20 rounded-xl p-4 space-y-3 relative overflow-hidden shadow-lg">
-      <div className="flex items-center justify-between border-b border-border-subtle pb-2">
+    <div className="bg-[#2B124C] border-2 border-[#522B5B] rounded-xl p-4 space-y-3 relative overflow-hidden shadow-[3px_3px_0px_#000000]">
+      <div className="flex items-center justify-between border-b-2 border-[#522B5B] pb-2">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-accent-coral/10 text-accent-coral border border-accent-coral/20">
-            <Sparkles className="w-4 h-4 animate-pulse" />
+          <div className="p-1.5 rounded-lg bg-[#522B5B] text-[#FBE4D8] border border-[#854F6C]">
+            <Sparkles className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold font-display uppercase tracking-wider text-text-primary">
+            <h4 className="text-xs font-black font-display uppercase tracking-wider text-[#FBE4D8]">
               ASL Grammar Syntax Transformer
             </h4>
-            <p className="text-[10px] text-text-secondary">
+            <p className="text-[10px] text-[#DFB6B2] font-bold">
               Converts spoken English (SVO) into native Deaf Sign Syntax (Topic-Comment OSV)
             </p>
           </div>
         </div>
-        <span className="px-2 py-0.5 rounded-full bg-accent-coral/10 border border-accent-coral/20 text-[9px] font-extrabold uppercase text-accent-coral">
+        <span className="px-2.5 py-0.5 rounded-full bg-[#522B5B] text-[#FBE4D8] border border-[#854F6C] text-[9px] font-black uppercase">
           JUDGES' ACCESSIBILITY PICK
         </span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center pt-1">
         {/* Standard Spoken English */}
-        <div className="bg-bg-elevated/60 p-3 rounded-lg border border-border-subtle space-y-1">
-          <span className="text-[9px] font-bold text-text-muted uppercase tracking-wider">Spoken English (SVO)</span>
-          <p className="text-xs text-text-secondary font-medium line-clamp-2">
+        <div className="bg-[#190019] p-3 rounded-lg border border-[#522B5B] space-y-1">
+          <span className="text-[9px] font-bold text-[#DFB6B2] uppercase tracking-wider">Spoken English (SVO)</span>
+          <p className="text-xs text-[#FBE4D8] font-medium line-clamp-2">
             "{currentTranscript || 'Today we are learning about how plants convert sunlight into energy.'}"
           </p>
         </div>
 
         {/* Transformed Native ASL Syntax */}
-        <div className="bg-accent-coral/10 p-3 rounded-lg border border-accent-coral/30 space-y-1 relative">
+        <div className="bg-[#190019] p-3 rounded-lg border border-[#854F6C] space-y-1 relative">
           <div className="flex justify-between items-center">
-            <span className="text-[9px] font-bold text-accent-coral uppercase tracking-wider flex items-center gap-1">
-              <ArrowRight className="w-3 h-3 text-accent-coral" /> Native Deaf Sign Syntax (OSV)
+            <span className="text-[9px] font-bold text-[#DFB6B2] uppercase tracking-wider flex items-center gap-1">
+              <ArrowRight className="w-3 h-3 text-[#DFB6B2]" /> Native Deaf Sign Syntax (OSV)
             </span>
           </div>
-          <p className="text-sm font-bold text-text-primary font-mono tracking-wide">
+          <p className="text-sm font-bold text-[#FBE4D8] font-mono tracking-wide">
             {aslSentence}
           </p>
         </div>

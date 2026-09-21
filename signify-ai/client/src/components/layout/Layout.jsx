@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
-import Sidebar from './Sidebar';
+import ParallaxBackground from './ParallaxBackground';
 import { useSettingsStore } from '../../store/useSettingsStore';
 
 export default function Layout() {
@@ -11,17 +11,19 @@ export default function Layout() {
   const isLanding = location.pathname === '/';
 
   return (
-    <div className="min-h-screen bg-bg-base flex flex-col selection:bg-accent-coral/25 selection:text-text-primary text-text-primary">
+    <div className="min-h-screen bg-[#190019] text-[#FBE4D8] flex flex-col relative selection:bg-[#DFB6B2]/20 selection:text-[#FBE4D8]">
+      {/* Global Dynamic Parallax Background for all pages */}
+      <ParallaxBackground />
+
       {/* Top Navbar */}
-      <Navbar />
+      <div className="relative z-30">
+        <Navbar />
+      </div>
 
       {/* Content wrapper */}
-      <div className="flex-1 flex relative">
-        {/* Sidebar - Collapsed/expanded left rail, only on non-landing pages */}
-        {!isLanding && <Sidebar />}
-
+      <div className="flex-1 flex flex-col relative z-10 w-full">
         {/* Main section */}
-        <main className={`flex-1 min-w-0 ${!isLanding ? 'md:pl-16' : ''}`}>
+        <main className="flex-1 min-w-0 w-full">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}

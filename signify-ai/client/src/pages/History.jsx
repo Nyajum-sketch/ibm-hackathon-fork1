@@ -6,6 +6,7 @@ import { SUPPORTED_LANGUAGES } from '../lib/translate';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Modal from '../components/ui/Modal';
+import BanterLoader from '../components/ui/BanterLoader';
 import toast from 'react-hot-toast';
 
 import { 
@@ -167,43 +168,47 @@ export default function History() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 select-none">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 min-h-[calc(100vh-8rem)] pb-16 select-none">
       
       {/* Title */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-text-primary tracking-tight font-display">
+        <div className="inline-flex items-center gap-2 bg-[#2B124C] text-[#FBE4D8] border-2 border-[#522B5B] rounded-full px-3 py-1 text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000000] mb-2">
+          <Clock className="w-3.5 h-3.5" />
+          <span>OFFLINE ARCHIVE</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight font-display text-[#FBE4D8]">
           Lecture History
         </h1>
-        <p className="text-sm text-text-secondary mt-1">
-          Review past lectures, search transript content, and read generated study notes
+        <p className="text-sm font-bold text-[#DFB6B2] mt-1">
+          Review past lectures, search transcript content, and read generated study notes
         </p>
       </div>
 
       {/* Search & Filter Controls bar */}
-      <div className="bg-bg-surface border border-border-subtle rounded-xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between shadow-[4px_4px_0px_#000000]">
         
         {/* Search Input */}
         <div className="relative w-full md:max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#DFB6B2]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search within lecture titles, transcripts, or summaries..."
-            className="w-full bg-bg-elevated border border-border-subtle hover:border-accent-coral/25 focus:border-accent-coral focus:ring-1 focus:ring-accent-coral/30 rounded-lg pl-10 pr-4 py-2 text-xs text-text-primary placeholder:text-text-muted focus:outline-none transition-colors"
+            className="w-full bg-[#190019] border-2 border-[#522B5B] rounded-full pl-10 pr-4 py-2 text-xs font-bold text-[#FBE4D8] placeholder:text-neutral-500 focus:outline-none transition-colors"
           />
         </div>
 
         {/* Translation Language Filters */}
         <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-text-secondary mr-1">Filter Language:</span>
+          <span className="text-[10px] uppercase font-black tracking-wider text-[#DFB6B2] mr-1">Filter Language:</span>
           
           <button
             onClick={() => setSelectedLanguage('all')}
-            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border-2 transition-all shadow-[2px_2px_0px_#000000] ${
               selectedLanguage === 'all'
-                ? 'bg-accent-coral/10 text-accent-coral border-accent-coral/20'
-                : 'bg-bg-elevated text-text-secondary border-border-subtle hover:text-text-primary'
+                ? 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2]'
+                : 'bg-[#522B5B] text-[#FBE4D8] border-[#854F6C] hover:bg-[#854F6C]'
             }`}
           >
             All Languages
@@ -213,13 +218,13 @@ export default function History() {
             <button
               key={lang.code}
               onClick={() => setSelectedLanguage(lang.code)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors flex items-center gap-1 ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border-2 transition-all shadow-[2px_2px_0px_#000000] flex items-center gap-1.5 ${
                 selectedLanguage === lang.code
-                  ? 'bg-accent-coral/10 text-accent-coral border-accent-coral/20'
-                  : 'bg-bg-elevated text-text-secondary border-border-subtle hover:text-text-primary'
+                  ? 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2]'
+                  : 'bg-[#522B5B] text-[#FBE4D8] border-[#854F6C] hover:bg-[#854F6C]'
               }`}
             >
-              <span>{lang.flag}</span>
+              <span>[{lang.flag}]</span>
               <span>{lang.name}</span>
             </button>
           ))}
@@ -228,15 +233,18 @@ export default function History() {
 
       {/* Lectures Masonry Grid */}
       {loading ? (
-        <div className="py-20 text-center text-text-secondary text-sm">Loading lecture archives...</div>
+        <div className="py-20 flex flex-col items-center justify-center space-y-4">
+          <BanterLoader boxColor="#DFB6B2" />
+          <p className="text-xs font-black uppercase tracking-wider text-[#DFB6B2]">Loading lecture archives...</p>
+        </div>
       ) : filteredLectures.length === 0 ? (
-        <div className="glass-panel p-16 text-center space-y-4 max-w-md mx-auto rounded-xl">
-          <div className="p-4 bg-bg-elevated border border-border-subtle rounded-full text-text-muted w-fit mx-auto">
+        <div className="bg-[#2B124C] border-2 border-[#522B5B] p-16 text-center space-y-4 max-w-md mx-auto rounded-2xl shadow-[4px_4px_0px_#000000]">
+          <div className="p-4 bg-[#522B5B] border-2 border-[#854F6C] rounded-2xl text-[#FBE4D8] w-fit mx-auto shadow-[2px_2px_0px_#000000]">
             <FileText className="w-8 h-8" />
           </div>
           <div>
-            <h3 className="text-text-primary font-bold text-base font-display">No archived lectures</h3>
-            <p className="text-xs text-text-secondary mt-1">
+            <h3 className="text-[#FBE4D8] font-black text-base uppercase font-display">No archived lectures</h3>
+            <p className="text-xs font-bold text-[#DFB6B2] mt-1">
               No archives matched your current search filters. Try typing a different query.
             </p>
           </div>
@@ -247,62 +255,53 @@ export default function History() {
           {/* Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedLectures.map((lec) => {
-              // Decide card borders (warm/cool) based on wordCount
-              const isWarm = lec.wordCount > 1500;
               const matchedLanguage = SUPPORTED_LANGUAGES.find(l => l.code === lec.targetLanguage);
 
               return (
                 <div
                   key={lec.id}
                   onClick={() => setActiveLectureDetail(lec)}
-                  className={`bg-bg-surface border rounded-xl p-5 cursor-pointer glass-card-hover flex flex-col justify-between h-64 relative overflow-hidden group ${
-                    isWarm ? 'border-accent-coral/15' : 'border-indigo-500/15'
-                  }`}
+                  className="bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl p-5 cursor-pointer shadow-[4px_4px_0px_#000000] hover:border-[#DFB6B2] hover:shadow-[6px_6px_0px_#000000] transition-all flex flex-col justify-between h-64 relative overflow-hidden group"
                 >
-                  {/* Subtle top indicator glow */}
-                  <div className={`absolute top-0 left-0 right-0 h-[3px] ${
-                    isWarm ? 'bg-accent-coral' : 'bg-indigo-500'
-                  }`} />
-
                   {/* Header info */}
                   <div className="space-y-2.5">
-                    <div className="flex justify-between items-center text-[10px] text-text-muted font-semibold">
+                    <div className="flex justify-between items-center text-[10px] text-[#DFB6B2] font-black uppercase">
                       <span>{new Date(lec.createdAt).toLocaleDateString()}</span>
-                      <div className="flex gap-1">
-                        <Badge variant="count">{formatDuration(lec.duration)}</Badge>
-                      </div>
+                      <span className="bg-[#522B5B] text-[#FBE4D8] border-2 border-[#854F6C] rounded-full px-2.5 py-0.5 text-[10px] font-black shadow-[1px_1px_0px_#000000]">
+                        {formatDuration(lec.duration)}
+                      </span>
                     </div>
 
-                    <h3 className="text-base font-bold text-text-primary font-display leading-snug line-clamp-2 group-hover:text-accent-coral transition-colors">
+                    <h3 className="text-base font-black text-[#FBE4D8] font-display leading-snug line-clamp-2 uppercase">
                       {lec.title}
                     </h3>
 
-                    <p className="text-xs text-text-secondary line-clamp-3 leading-relaxed">
+                    <p className="text-xs font-semibold text-[#DFB6B2] line-clamp-3 leading-relaxed">
                       {lec.transcript}
                     </p>
                   </div>
 
                   {/* Footer Stats & delete */}
-                  <div className="flex items-center justify-between pt-4 border-t border-border-subtle/50 mt-4 shrink-0">
-                    <div className="flex gap-3 text-[10px] font-semibold text-text-secondary">
+                  <div className="flex items-center justify-between pt-3 border-t-2 border-[#522B5B] mt-4 shrink-0">
+                    <div className="flex gap-3 text-[11px] font-black text-[#DFB6B2]">
                       <span className="flex items-center gap-1">
-                        <BookOpen className="w-3.5 h-3.5 text-text-muted" />
+                        <BookOpen className="w-3.5 h-3.5" />
                         {lec.wordCount} words
                       </span>
                       {matchedLanguage && (
                         <span className="flex items-center gap-1">
-                          <Languages className="w-3.5 h-3.5 text-text-muted" />
-                          {matchedLanguage.flag} {matchedLanguage.name}
+                          <Languages className="w-3.5 h-3.5" />
+                          [{matchedLanguage.flag}] {matchedLanguage.name}
                         </span>
                       )}
                     </div>
 
                     <button
                       onClick={(e) => handleDelete(lec.id, e)}
-                      className="p-1.5 rounded bg-transparent hover:bg-red-500/10 text-text-muted hover:text-red-400 transition-colors focus:outline-none"
+                      className="p-1.5 rounded-full border-2 border-[#6C151E] bg-[#6C151E] hover:bg-[#854F6C] text-[#FBE4D8] shadow-[1px_1px_0px_#000000] transition-colors focus:outline-none"
                       title="Delete archive"
                     >
-                      <Trash2 className="w-4.5 h-4.5" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
@@ -312,9 +311,9 @@ export default function History() {
 
           {/* Manual Pagination Footer */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-border-subtle/50 pt-6">
-              <span className="text-xs text-text-secondary">
-                Page <strong className="text-text-primary">{currentPage}</strong> of <strong className="text-text-primary">{totalPages}</strong> ({filteredLectures.length} total)
+            <div className="flex items-center justify-between border-t-2 border-[#522B5B] pt-6">
+              <span className="text-xs font-black text-[#DFB6B2]">
+                Page {currentPage} of {totalPages} ({filteredLectures.length} total)
               </span>
               <div className="flex gap-2">
                 <Button

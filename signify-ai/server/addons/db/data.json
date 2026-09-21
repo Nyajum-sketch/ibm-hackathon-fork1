@@ -42,6 +42,14 @@
       "status": "active",
       "startedAt": "2026-09-20T10:12:10.035Z",
       "endedAt": null
+    },
+    {
+      "id": "sess_1789990980067_u9xvi",
+      "teacherId": "guest",
+      "joinCode": "YN5Z5V",
+      "status": "ended",
+      "startedAt": "2026-09-21T11:43:00.068Z",
+      "endedAt": "2026-09-21T11:44:04.732Z"
     }
   ],
   "session_members": [],

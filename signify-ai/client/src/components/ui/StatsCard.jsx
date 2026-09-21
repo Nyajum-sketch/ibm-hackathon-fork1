@@ -47,16 +47,15 @@ export default function StatsCard({ icon: Icon, label, value, suffix = '', durat
   const displayValue = typeof count === 'number' ? count.toLocaleString() : count;
 
   return (
-    <div className="glass-panel glass-card-hover p-6 rounded-xl flex items-center gap-4 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-24 h-24 bg-accent-coral/5 rounded-full blur-2xl pointer-events-none" />
+    <div className="bg-[#2B124C] border-2 border-[#522B5B] p-6 rounded-2xl flex items-center gap-4 relative overflow-hidden shadow-[4px_4px_0px_#000000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#000000] transition-all">
       {Icon && (
-        <div className="p-3 bg-accent-coral/10 text-accent-coral rounded-lg border border-accent-coral/20">
+        <div className="p-3 bg-[#522B5B] text-[#DFB6B2] rounded-xl border-2 border-[#854F6C] shadow-[2px_2px_0px_#000000]">
           <Icon className="w-6 h-6" />
         </div>
       )}
       <div>
-        <p className="text-text-secondary text-[10px] font-semibold tracking-wider uppercase">{label}</p>
-        <h3 className="text-2xl font-bold font-display text-text-primary mt-1">
+        <p className="text-[#DFB6B2] text-xs font-black tracking-wider uppercase">{label}</p>
+        <h3 className="text-2xl font-black font-display text-[#FBE4D8] mt-1">
           {displayValue}{suffix}
         </h3>
       </div>

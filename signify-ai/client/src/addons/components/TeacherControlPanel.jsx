@@ -33,33 +33,33 @@ export default function TeacherControlPanel() {
   };
 
   return (
-    <div className="w-full bg-bg-surface/90 backdrop-blur-md border-b border-border-subtle p-3 px-4 sm:px-6">
+    <div className="w-full bg-[#190019] border-b-2 border-[#522B5B] py-2.5 px-4 sm:px-6 text-[#FBE4D8] select-none">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
         
         {/* Left: Session Status & Join Code */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-accent-teal/10 border border-accent-teal/20 text-accent-teal font-bold">
-            <Shield className="w-4 h-4" />
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#522B5B] border-2 border-[#854F6C] text-[#FBE4D8] font-black uppercase shadow-[2px_2px_0px_#000000]">
+            <Shield className="w-3.5 h-3.5" />
             <span>Teacher Workspace</span>
           </div>
 
           {activeSession ? (
             <div className="flex items-center gap-2">
-              <span className="text-text-secondary font-medium">Session Code:</span>
+              <span className="font-bold text-[#DFB6B2] uppercase tracking-wider text-[11px]">Session Code:</span>
               <button
                 onClick={copyCode}
-                className="flex items-center gap-1.5 px-2.5 py-1 bg-bg-elevated hover:bg-bg-elevated/80 border border-border-subtle rounded-lg font-mono text-sm font-bold text-accent-coral transition-all"
+                className="flex items-center gap-1.5 px-3 py-1 bg-[#2B124C] hover:bg-[#522B5B] border-2 border-[#522B5B] rounded-full font-mono text-xs font-black text-[#FBE4D8] shadow-[2px_2px_0px_#000000] transition-all"
               >
                 <span>{activeSession.joinCode}</span>
-                {copiedCode ? <Check className="w-3.5 h-3.5 text-accent-teal" /> : <Copy className="w-3.5 h-3.5 text-text-tertiary" />}
+                {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-[#DFB6B2]" />}
               </button>
             </div>
           ) : (
             <button
               onClick={createClassSession}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-coral text-bg-base font-bold hover:opacity-90 transition-opacity"
+              className="flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#522B5B] text-[#FBE4D8] hover:bg-[#854F6C] border-2 border-[#854F6C] font-black text-xs uppercase shadow-[2px_2px_0px_#000000] transition-all"
             >
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-3.5 h-3.5" />
               <span>Start Session for Students</span>
             </button>
           )}
@@ -71,34 +71,34 @@ export default function TeacherControlPanel() {
             {/* Add Tag button */}
             <button
               onClick={() => setShowAddTagModal(true)}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-border-subtle border border-border-subtle text-text-primary font-semibold transition-all"
+              className="flex items-center gap-1 px-3 py-1 rounded-full bg-[#522B5B] hover:bg-[#854F6C] border-2 border-[#854F6C] text-[#FBE4D8] font-black text-xs uppercase shadow-[2px_2px_0px_#000000] transition-all"
             >
-              <Plus className="w-3.5 h-3.5 text-accent-coral" />
-              <span>Override / Add Tag</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Tag</span>
             </button>
 
             {/* Trigger New Topic Alert */}
             <button
               onClick={() => triggerManualAlert('NEW_TOPIC', 'Teacher introduced a new topic')}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 font-semibold transition-all"
+              className="flex items-center gap-1 px-3 py-1 rounded-full bg-[#522B5B] hover:bg-[#854F6C] border-2 border-[#854F6C] text-[#FBE4D8] font-black text-xs uppercase shadow-[2px_2px_0px_#000000] transition-all"
             >
               <BellRing className="w-3.5 h-3.5" />
-              <span>New Topic Alert</span>
+              <span>New Topic</span>
             </button>
 
             {/* Emergency Trigger Button */}
             <button
               onClick={() => setShowConfirmEmergency(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-400 font-bold transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#6C151E] hover:bg-[#854F6C] text-white border-2 border-[#6C151E] font-black text-xs uppercase shadow-[2px_2px_0px_#000000] transition-all"
             >
-              <AlertTriangle className="w-4 h-4 animate-pulse" />
+              <AlertTriangle className="w-3.5 h-3.5" />
               <span>EMERGENCY ALERT</span>
             </button>
 
             {/* End Session */}
             <button
               onClick={endClassSession}
-              className="px-3 py-1.5 rounded-lg bg-bg-elevated hover:bg-red-500/10 border border-border-subtle text-text-secondary hover:text-red-400 transition-colors font-semibold"
+              className="px-3 py-1 rounded-full bg-[#2B124C] hover:bg-[#522B5B] border-2 border-[#522B5B] text-[#FBE4D8] font-black text-xs uppercase shadow-[2px_2px_0px_#000000] transition-colors"
             >
               End Session
             </button>
@@ -152,12 +152,12 @@ export default function TeacherControlPanel() {
                     onChange={e => setManualType(e.target.value)}
                     className="w-full px-3 py-2 bg-bg-elevated border border-border-subtle rounded-xl text-xs text-text-primary focus:outline-none focus:border-accent-coral"
                   >
-                    <option value="EXAM_POINT">⚠ EXAM_POINT (Exam Question)</option>
-                    <option value="EMPHASIS">⚡ EMPHASIS (Key Note)</option>
-                    <option value="DEFINITION">📘 DEFINITION (Concept)</option>
-                    <option value="QUESTION">❓ QUESTION (Discussion)</option>
-                    <option value="NEW_TOPIC">📌 NEW_TOPIC (Section)</option>
-                    <option value="HOMEWORK">📝 HOMEWORK (Assignment)</option>
+                    <option value="EXAM_POINT">[EXAM] EXAM_POINT (Exam Question)</option>
+                    <option value="EMPHASIS">[NOTE] EMPHASIS (Key Note)</option>
+                    <option value="DEFINITION">[DEF] DEFINITION (Concept)</option>
+                    <option value="QUESTION">[Q] QUESTION (Discussion)</option>
+                    <option value="NEW_TOPIC">[TOPIC] NEW_TOPIC (Section)</option>
+                    <option value="HOMEWORK">[HW] HOMEWORK (Assignment)</option>
                   </select>
                 </div>
 
@@ -199,18 +199,18 @@ export default function TeacherControlPanel() {
       {showConfirmEmergency && ReactDOM.createPortal(
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/80 backdrop-blur-md">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <div className="relative w-full max-w-sm transform overflow-hidden rounded-2xl bg-bg-surface border-2 border-red-500 p-6 text-center align-middle shadow-2xl transition-all my-8 text-text-primary space-y-4">
-              <div className="w-12 h-12 rounded-full bg-red-500/20 text-red-500 mx-auto flex items-center justify-center border border-red-500/40">
-                <AlertTriangle className="w-7 h-7 animate-ping" />
+            <div className="relative w-full max-w-sm transform overflow-hidden rounded-2xl bg-[#2B124C] border-2 border-[#6C151E] p-6 text-center align-middle shadow-2xl transition-all my-8 text-[#FBE4D8] space-y-4">
+              <div className="w-12 h-12 rounded-full bg-[#6C151E]/20 text-[#DFB6B2] mx-auto flex items-center justify-center border border-[#6C151E]/60">
+                <AlertTriangle className="w-7 h-7" />
               </div>
-              <h3 className="text-lg font-bold font-display text-red-400">Confirm Emergency Broadcast</h3>
-              <p className="text-xs text-text-secondary">
+              <h3 className="text-lg font-bold font-display text-[#DFB6B2]">Confirm Emergency Broadcast</h3>
+              <p className="text-xs text-[#DFB6B2]">
                 This will trigger a repeating full-screen flash, sound, and continuous vibration on ALL connected student devices until manually acknowledged.
               </p>
               <div className="flex justify-center gap-3 pt-2">
                 <button
                   onClick={() => setShowConfirmEmergency(false)}
-                  className="px-4 py-2 text-xs font-bold bg-bg-elevated rounded-xl text-text-primary hover:bg-border-subtle"
+                  className="px-4 py-2 text-xs font-bold bg-[#522B5B] rounded-xl text-[#FBE4D8] hover:bg-[#854F6C] border border-[#854F6C]"
                 >
                   Cancel
                 </button>

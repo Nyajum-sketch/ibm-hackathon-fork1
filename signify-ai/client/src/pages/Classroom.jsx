@@ -193,49 +193,51 @@ export default function Classroom() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6 h-[calc(100vh-4rem)]">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6 min-h-[calc(100vh-8rem)] pb-16 select-none bg-[#190019] text-[#FBE4D8]">
       
       {/* Student Session Access & Join Code space */}
       <StudentSessionBanner />
 
-      {/* JUDGES' FEATURE 1: Acoustic Sound & Haptic Notification Bar */}
+      {/* Acoustic Sound & Haptic Notification Bar */}
       <SoundHapticIndicator isListening={isListening} />
 
       {/* Main split panels */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-10 gap-6 min-h-0">
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
         
         {/* Left: Live Caption Panel + ASL Grammar Bridge */}
-        <div className="lg:col-span-6 flex flex-col min-h-0 space-y-4">
-          <div className="flex-1 min-h-0 flex flex-col">
+        <div className="lg:col-span-6 flex flex-col space-y-4">
+          <div className="flex-1 min-h-[420px] flex flex-col bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl shadow-[4px_4px_0px_#000000] overflow-hidden">
             <LiveCaptionPanel />
           </div>
 
-          {/* JUDGES' FEATURE 2: Real-time ASL Grammar Syntax Transformer */}
-          <AslGrammarBridge currentTranscript={[...finalTranscript, interimText].filter(Boolean).slice(-1)[0]} />
+          {/* Real-time ASL Grammar Syntax Transformer */}
+          <div className="bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl shadow-[4px_4px_0px_#000000] p-4">
+            <AslGrammarBridge currentTranscript={[...finalTranscript, interimText].filter(Boolean).slice(-1)[0]} />
+          </div>
         </div>
 
         {/* Right: AI Panel */}
-        <div className="lg:col-span-4 flex flex-col min-h-0 bg-bg-surface border border-border-subtle rounded-xl overflow-hidden">
+        <div className="lg:col-span-4 flex flex-col bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl shadow-[4px_4px_0px_#000000] overflow-hidden min-h-[500px]">
           
           {/* Tab Header */}
-          <div className="flex border-b border-border-subtle bg-bg-surface/50">
+          <div className="flex border-b-2 border-[#522B5B] bg-[#190019]">
             <button
               onClick={() => setActiveRightTab('summary')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-xs font-bold font-display uppercase tracking-wider transition-colors border-b-2 focus:outline-none ${
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-wider transition-colors border-r-2 border-[#522B5B] ${
                 activeRightTab === 'summary'
-                  ? 'border-accent-coral text-accent-coral bg-accent-coral/5'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-elevated/20'
+                  ? 'bg-[#DFB6B2] text-[#190019]'
+                  : 'bg-[#2B124C] text-[#FBE4D8] hover:bg-[#522B5B]'
               }`}
             >
               <BrainCircuit className="w-4 h-4" />
-              AI Study Notes
+              AI Notes
             </button>
             <button
               onClick={() => setActiveRightTab('ask_tutor')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-xs font-bold font-display uppercase tracking-wider transition-colors border-b-2 focus:outline-none ${
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-wider transition-colors ${
                 activeRightTab === 'ask_tutor'
-                  ? 'border-accent-coral text-accent-coral bg-accent-coral/5'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-elevated/20'
+                  ? 'bg-[#DFB6B2] text-[#190019]'
+                  : 'bg-[#2B124C] text-[#FBE4D8] hover:bg-[#522B5B]'
               }`}
             >
               <MessageSquare className="w-4 h-4" />
@@ -244,33 +246,33 @@ export default function Classroom() {
           </div>
 
           {/* Controls strip */}
-          <div className="px-5 py-3.5 border-b border-border-subtle bg-bg-elevated/50 flex flex-wrap gap-4 items-center justify-between">
+          <div className="px-4 py-3 border-b-2 border-[#522B5B] bg-[#522B5B] flex flex-wrap gap-3 items-center justify-between">
             {/* Language selector */}
             <div className="flex items-center gap-2">
-              <Languages className="w-4 h-4 text-accent-coral" />
+              <Languages className="w-4 h-4 text-[#DFB6B2]" />
               <select
                 value={targetLanguage}
                 onChange={(e) => settingsActions.setTargetLanguage(e.target.value)}
-                className="bg-bg-surface border border-border-subtle rounded-md px-2.5 py-1 text-xs text-text-primary focus:outline-none focus:border-accent-coral transition-colors cursor-pointer"
+                className="bg-[#190019] border-2 border-[#854F6C] rounded-full px-3 py-1 text-xs font-black text-[#FBE4D8] shadow-[2px_2px_0px_#000000] focus:outline-none cursor-pointer"
               >
                 {SUPPORTED_LANGUAGES.map((lang) => (
                   <option key={lang.code} value={lang.code}>
-                    {lang.flag} {lang.name}
+                    [{lang.flag}] {lang.name}
                   </option>
                 ))}
               </select>
             </div>
 
             {/* Toggles */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <label className="flex items-center gap-1.5 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={autoTranslate}
                   onChange={settingsActions.toggleAutoTranslate}
-                  className="rounded border-border-subtle text-accent-coral focus:ring-0 cursor-pointer w-3.5 h-3.5"
+                  className="rounded border-2 border-[#DFB6B2] text-[#DFB6B2] focus:ring-0 cursor-pointer w-4 h-4"
                 />
-                <span className="text-[10px] uppercase font-bold tracking-wider text-text-secondary">Translate</span>
+                <span className="text-[11px] uppercase font-black tracking-wider text-[#FBE4D8]">Translate</span>
               </label>
               
               <label className="flex items-center gap-1.5 cursor-pointer select-none">
@@ -278,20 +280,20 @@ export default function Classroom() {
                   type="checkbox"
                   checked={autoSummarize}
                   onChange={settingsActions.toggleAutoSummarize}
-                  className="rounded border-border-subtle text-accent-coral focus:ring-0 cursor-pointer w-3.5 h-3.5"
+                  className="rounded border-2 border-[#DFB6B2] text-[#DFB6B2] focus:ring-0 cursor-pointer w-4 h-4"
                 />
-                <span className="text-[10px] uppercase font-bold tracking-wider text-text-secondary">Auto-Notes</span>
+                <span className="text-[11px] uppercase font-black tracking-wider text-[#FBE4D8]">Auto-Notes</span>
               </label>
             </div>
           </div>
 
           {/* QR Share Panel */}
-          <div className="px-5 pb-2">
+          <div className="px-4 py-2 bg-[#190019] border-b-2 border-[#522B5B]">
             <QRJoinPanel />
           </div>
 
           {/* Tab Content */}
-          <div className="flex-1 overflow-y-auto p-5">
+          <div className="flex-1 overflow-y-auto p-4 bg-[#2B124C]">
             {activeRightTab === 'summary' ? (
               <LectureSummarizer />
             ) : (
@@ -304,77 +306,75 @@ export default function Classroom() {
       <HeatmapTimeline />
 
       {/* Bottom Control Bar */}
-      <div className="bg-bg-surface border border-border-subtle rounded-xl p-4 md:px-6 flex flex-wrap gap-4 items-center justify-between shrink-0 relative z-50">
+      <div className="bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl p-4 md:px-6 flex flex-wrap gap-4 items-center justify-between shrink-0 shadow-[5px_5px_0px_#000000]">
         
         {/* Recording controls */}
         <div className="flex flex-wrap items-center gap-3">
-          <Button
+          <button
             onClick={toggleListening}
-            variant={isListening && !isDemoMode ? 'danger' : 'primary'}
-            icon={isListening && !isDemoMode ? MicOff : Mic}
-            className="font-display font-bold uppercase tracking-wider"
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full border-2 font-black text-xs uppercase tracking-wider shadow-[3px_3px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 transition-all ${
+              isListening && !isDemoMode 
+                ? 'bg-[#6C151E] text-white border-[#6C151E]' 
+                : 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2] hover:bg-[#FBE4D8]'
+            }`}
           >
-            {isListening && !isDemoMode ? 'Stop Recording' : 'Begin Recording'}
-          </Button>
+            {isListening && !isDemoMode ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            <span>{isListening && !isDemoMode ? 'Stop Recording' : 'Begin Recording'}</span>
+          </button>
 
-          <Button
+          <button
             onClick={toggleDemo}
-            variant="ghost"
-            icon={Sparkles}
-            className="text-xs uppercase tracking-wider"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border-2 border-[#854F6C] bg-[#522B5B] text-[#FBE4D8] font-black text-xs uppercase tracking-wider shadow-[3px_3px_0px_#000000] hover:bg-[#854F6C] active:translate-x-0.5 active:translate-y-0.5 transition-all"
           >
-            {isListening && isDemoMode ? 'Stop Demo' : 'Try Demo'}
-          </Button>
+            <Sparkles className="w-4 h-4 text-[#DFB6B2]" />
+            <span>{isListening && isDemoMode ? 'Stop Demo' : 'Try Demo'}</span>
+          </button>
         </div>
 
         {/* Session stats */}
         {isListening && (
-          <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-text-secondary bg-black/10 px-4 py-2 rounded-lg border border-border-subtle">
+          <div className="flex flex-wrap items-center gap-3 text-xs font-black text-[#FBE4D8] bg-[#522B5B] px-4 py-1.5 rounded-full border-2 border-[#854F6C] shadow-[2px_2px_0px_#000000]">
             <div className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-accent-coral" />
-              <span>Duration: <strong className="text-text-primary">{formatTimer(elapsedSeconds)}</strong></span>
+              <Clock className="w-3.5 h-3.5 text-[#DFB6B2]" />
+              <span>{formatTimer(elapsedSeconds)}</span>
             </div>
-            <div className="hidden sm:block h-3 w-px bg-border-subtle" />
+            <span>•</span>
             <div>
-              <span>Words: <strong className="text-text-primary">{wordCount}</strong></span>
+              <span>{wordCount} words</span>
             </div>
-            <div className="hidden sm:block h-3 w-px bg-border-subtle" />
+            <span>•</span>
             <div className="flex items-center gap-1">
-              <BookOpen className="w-4 h-4 text-accent-coral" />
-              <span>Reading: <strong className="text-text-primary">{estimatedReadingTime} min</strong></span>
+              <BookOpen className="w-3.5 h-3.5 text-[#DFB6B2]" />
+              <span>{estimatedReadingTime} min read</span>
             </div>
           </div>
         )}
 
         {/* Action buttons */}
-        <div className="flex items-center gap-2">
-          <Button
+        <div className="flex flex-wrap items-center gap-2">
+          <button
             onClick={() => window.open('/avatar', '_blank')}
-            variant="ghost"
-            size="sm"
-            icon={Accessibility}
-            className="text-accent-coral border-accent-coral/20 hover:bg-accent-coral/10"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border-2 border-[#DFB6B2] bg-[#DFB6B2] text-[#190019] font-black text-xs uppercase tracking-wider shadow-[2px_2px_0px_#000000] hover:bg-[#FBE4D8]"
           >
-            Sign Avatar Player
-          </Button>
-          <Button
+            <Accessibility className="w-3.5 h-3.5" />
+            <span>Sign Avatar</span>
+          </button>
+          <button
             onClick={handleOpenSaveModal}
             disabled={finalTranscript.length === 0}
-            variant="ghost"
-            size="sm"
-            icon={Save}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border-2 border-[#854F6C] bg-[#522B5B] text-[#FBE4D8] font-black text-xs uppercase tracking-wider shadow-[2px_2px_0px_#000000] hover:bg-[#854F6C] disabled:opacity-40"
           >
-            Save Session
-          </Button>
-          <Button
+            <Save className="w-3.5 h-3.5 text-[#DFB6B2]" />
+            <span>Save</span>
+          </button>
+          <button
             onClick={handleExportTxt}
             disabled={finalTranscript.length === 0}
-            variant="ghost"
-            size="sm"
-            icon={Download}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border-2 border-[#854F6C] bg-[#522B5B] text-[#FBE4D8] font-black text-xs uppercase tracking-wider shadow-[2px_2px_0px_#000000] hover:bg-[#854F6C] disabled:opacity-40"
           >
-            Download Transcript
-          </Button>
+            <Download className="w-3.5 h-3.5 text-[#DFB6B2]" />
+            <span>Download</span>
+          </button>
         </div>
       </div>
 

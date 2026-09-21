@@ -37,7 +37,7 @@ function SettingToggle({ checked, onChange, id }) {
         onChange={onChange}
         className="sr-only peer"
       />
-      <div className="w-10 h-5 bg-bg-elevated peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-text-secondary peer-checked:after:bg-accent-coral after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-accent-coral/20 border border-border-subtle transition-all" />
+      <div className="w-12 h-6 bg-[#190019] peer-focus:outline-none rounded-full peer peer-checked:bg-[#522B5B] border-2 border-[#522B5B] peer-checked:after:translate-x-6 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#DFB6B2] after:border-2 after:border-[#190019] after:rounded-full after:h-4 after:w-4 after:transition-all shadow-[2px_2px_0px_#000000]" />
     </label>
   );
 }
@@ -45,12 +45,12 @@ function SettingToggle({ checked, onChange, id }) {
 // Section wrapper
 function SettingSection({ icon: Icon, title, children }) {
   return (
-    <div className="bg-bg-surface border border-border-subtle rounded-xl p-6 space-y-5">
-      <div className="flex items-center gap-2.5 border-b border-border-subtle pb-4">
-        <div className="p-1.5 bg-accent-coral/10 rounded-lg">
-          <Icon className="w-4 h-4 text-accent-coral" />
+    <div className="bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl p-6 space-y-5 shadow-[4px_4px_0px_#000000]">
+      <div className="flex items-center gap-2.5 border-b-2 border-[#522B5B] pb-4">
+        <div className="p-2 bg-[#522B5B] border-2 border-[#854F6C] rounded-xl shadow-[2px_2px_0px_#000000]">
+          <Icon className="w-4 h-4 text-[#FBE4D8]" />
         </div>
-        <h2 className="font-bold text-text-primary text-sm font-display uppercase tracking-wider">{title}</h2>
+        <h2 className="font-black text-[#FBE4D8] text-sm uppercase tracking-wider font-display">{title}</h2>
       </div>
       {children}
     </div>
@@ -62,8 +62,8 @@ function SettingRow({ label, description, children }) {
   return (
     <div className="flex items-center justify-between gap-4 py-1">
       <div className="min-w-0">
-        <p className="text-xs font-bold text-text-primary">{label}</p>
-        {description && <p className="text-[10px] text-text-secondary mt-0.5 leading-relaxed">{description}</p>}
+        <p className="text-xs font-black text-[#FBE4D8]">{label}</p>
+        {description && <p className="text-xs text-[#DFB6B2] mt-0.5 leading-relaxed font-semibold">{description}</p>}
       </div>
       <div className="shrink-0">{children}</div>
     </div>
@@ -125,42 +125,32 @@ export default function Settings() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 space-y-6 select-none">
+    <div className="max-w-5xl mx-auto px-4 py-8 space-y-6 min-h-[calc(100vh-8rem)] pb-16 select-none">
 
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-text-primary tracking-tight font-display">
+          <div className="inline-flex items-center gap-2 bg-[#2B124C] text-[#FBE4D8] border-2 border-[#522B5B] rounded-full px-3 py-1 text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000000] mb-2">
+            <Sliders className="w-3.5 h-3.5" />
+            <span>APP CONFIGURATION</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight font-display text-[#FBE4D8]">
             Preferences
           </h1>
-          <p className="text-sm text-text-secondary mt-1">
+          <p className="text-sm font-bold text-[#DFB6B2] mt-1">
             Customize captions, translations, appearance, and accessibility settings
           </p>
         </div>
-        {/* Quick Theme Toggle in Header */}
-        <button
-          onClick={actions.toggleTheme}
-          className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border font-bold text-xs uppercase tracking-wider transition-all ${
-            theme === 'light'
-              ? 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100'
-              : 'bg-accent-coral/10 border-accent-coral/20 text-accent-coral hover:bg-accent-coral/20'
-          }`}
-        >
-          {theme === 'light' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          {theme === 'light' ? 'Light Mode Active' : 'Dark Mode Active'}
-        </button>
       </div>
 
-      {/* ======================================== */}
       {/* Grid: 2 columns on larger screens */}
-      {/* ======================================== */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* ---- SECTION 1: APPEARANCE ---- */}
         <SettingSection icon={Eye} title="Caption Appearance">
           {/* Font Size */}
           <div className="space-y-2">
-            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Caption Font Size</p>
+            <p className="text-[10px] font-black text-[#DFB6B2] uppercase tracking-wider">Caption Font Size</p>
             <div className="grid grid-cols-4 gap-2">
               {[
                 { key: 'md', label: 'Medium' },
@@ -171,10 +161,10 @@ export default function Settings() {
                 <button
                   key={key}
                   onClick={() => actions.setCaptionFontSize(key)}
-                  className={`py-2 px-1 rounded-lg text-[10px] font-bold border capitalize transition-all ${
+                  className={`py-2 px-1 rounded-full text-xs font-black uppercase border-2 transition-all shadow-[2px_2px_0px_#000000] ${
                     captionFontSize === key
-                      ? 'bg-accent-coral/15 text-accent-coral border-accent-coral/30 shadow-sm'
-                      : 'bg-bg-elevated text-text-secondary border-border-subtle hover:text-text-primary hover:border-text-secondary/25'
+                      ? 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2]'
+                      : 'bg-[#522B5B] text-[#FBE4D8] border-[#854F6C] hover:bg-[#854F6C]'
                   }`}
                 >
                   {label}
@@ -185,7 +175,7 @@ export default function Settings() {
 
           {/* Caption Style */}
           <div className="space-y-2">
-            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Caption Contrast Style</p>
+            <p className="text-[10px] font-black text-[#DFB6B2] uppercase tracking-wider">Caption Contrast Style</p>
             <div className="grid grid-cols-2 gap-2">
               {[
                 { key: 'standard', label: 'Standard' },
@@ -194,10 +184,10 @@ export default function Settings() {
                 <button
                   key={key}
                   onClick={() => actions.setCaptionStyle(key)}
-                  className={`py-2 px-3 rounded-lg text-xs font-bold border transition-all ${
+                  className={`py-2 px-3 rounded-full text-xs font-black uppercase border-2 transition-all shadow-[2px_2px_0px_#000000] ${
                     captionStyle === key
-                      ? 'bg-accent-coral/15 text-accent-coral border-accent-coral/30'
-                      : 'bg-bg-elevated text-text-secondary border-border-subtle hover:text-text-primary'
+                      ? 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2]'
+                      : 'bg-[#522B5B] text-[#FBE4D8] border-[#854F6C] hover:bg-[#854F6C]'
                   }`}
                 >
                   {label}
@@ -208,16 +198,16 @@ export default function Settings() {
 
           {/* Line Spacing */}
           <div className="space-y-2">
-            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Caption Line Spacing</p>
+            <p className="text-[10px] font-black text-[#DFB6B2] uppercase tracking-wider">Caption Line Spacing</p>
             <div className="grid grid-cols-4 gap-2">
               {['tight', 'normal', 'relaxed', 'loose'].map((spacing) => (
                 <button
                   key={spacing}
                   onClick={() => actions.setLineSpacing(spacing)}
-                  className={`py-2 px-2 rounded-lg text-[10px] font-semibold capitalize border transition-all ${
+                  className={`py-2 px-2 rounded-full text-xs font-black uppercase border-2 transition-all shadow-[2px_2px_0px_#000000] ${
                     lineSpacing === spacing
-                      ? 'bg-accent-coral/15 text-accent-coral border-accent-coral/30'
-                      : 'bg-bg-elevated text-text-secondary border-border-subtle hover:text-text-primary'
+                      ? 'bg-[#DFB6B2] text-[#190019] border-[#DFB6B2]'
+                      : 'bg-[#522B5B] text-[#FBE4D8] border-[#854F6C] hover:bg-[#854F6C]'
                   }`}
                 >
                   {spacing}
@@ -225,6 +215,7 @@ export default function Settings() {
               ))}
             </div>
           </div>
+
 
           {/* Background Opacity Slider */}
           <div className="space-y-2">
@@ -316,11 +307,11 @@ export default function Settings() {
             <select
               value={targetLanguage}
               onChange={(e) => actions.setTargetLanguage(e.target.value)}
-              className="w-full bg-bg-elevated border border-border-subtle rounded-lg px-3 py-2.5 text-xs text-text-primary focus:outline-none focus:border-accent-coral transition-colors cursor-pointer"
+              className="w-full bg-[#190019] border-2 border-[#522B5B] rounded-full px-4 py-2.5 text-xs font-black text-[#FBE4D8] shadow-[2px_2px_0px_#000000] focus:outline-none cursor-pointer"
             >
               {SUPPORTED_LANGUAGES.map((lang) => (
                 <option key={lang.code} value={lang.code}>
-                  {lang.flag} {lang.name}
+                  [{lang.flag}] {lang.name}
                 </option>
               ))}
             </select>
@@ -343,29 +334,24 @@ export default function Settings() {
           </SettingRow>
 
           {/* AI Key Input */}
-          <div className="space-y-2 pt-2 border-t border-border-subtle/50">
-            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Custom AI Key (Optional)</p>
+          <div className="space-y-2 pt-2 border-t-2 border-[#522B5B]">
+            <p className="text-[10px] font-black text-[#DFB6B2] uppercase tracking-wider">Custom AI Key (Optional)</p>
             <div className="flex gap-2">
               <input
                 type="password"
                 value={localApiKey}
                 onChange={(e) => setLocalApiKey(e.target.value)}
                 placeholder="Enter custom key (optional)..."
-                className="flex-1 bg-bg-elevated border border-border-subtle hover:border-accent-coral/20 focus:border-accent-coral focus:ring-1 focus:ring-accent-coral/30 rounded-lg px-3 py-2 text-xs text-text-primary placeholder:text-text-muted focus:outline-none transition-colors"
+                className="flex-1 bg-[#190019] border-2 border-[#522B5B] rounded-full px-4 py-2 text-xs font-bold text-[#FBE4D8] placeholder:text-neutral-500 focus:outline-none transition-colors"
               />
               <button
                 onClick={handleSaveApiKey}
-                className={`px-3 py-2 rounded-lg border text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  keySaved
-                    ? 'bg-success/15 text-success border-success/30'
-                    : 'bg-bg-elevated border-border-subtle text-text-secondary hover:text-text-primary hover:border-accent-coral/30'
-                }`}
+                className="px-4 py-2 rounded-full border-2 border-[#854F6C] bg-[#522B5B] text-[#FBE4D8] text-xs font-black uppercase shadow-[2px_2px_0px_#000000] transition-all hover:bg-[#854F6C]"
               >
-                {keySaved ? <CheckCircle2 className="w-3.5 h-3.5" /> : null}
                 {keySaved ? 'Saved!' : 'Save Key'}
               </button>
             </div>
-            <p className="text-[10px] text-text-muted">If empty, the app uses the built-in shared AI service.</p>
+            <p className="text-[10px] font-bold text-[#DFB6B2]">If empty, the app uses the built-in shared AI service.</p>
           </div>
         </SettingSection>
 
@@ -380,31 +366,31 @@ export default function Settings() {
           </SettingRow>
 
           <SettingRow label="Haptic Feedback Indicator" description="Show the acoustic awareness bar at the top of the classroom (visual vibration indicator)">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-accent-coral/10 border border-accent-coral/20 rounded-lg">
-              <Zap className="w-3.5 h-3.5 text-accent-coral" />
-              <span className="text-[10px] font-bold text-accent-coral">Always On</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#522B5B] border-2 border-[#854F6C] rounded-full shadow-[2px_2px_0px_#000000]">
+              <Zap className="w-3.5 h-3.5 text-[#FBE4D8]" />
+              <span className="text-[10px] font-black text-[#FBE4D8] uppercase">Always On</span>
             </div>
           </SettingRow>
 
-          <div className="pt-2 p-3 bg-bg-elevated rounded-lg border border-border-subtle space-y-2">
-            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+          <div className="pt-2 p-3 bg-[#190019] rounded-xl border-2 border-[#522B5B] space-y-2">
+            <p className="text-[10px] font-black text-[#DFB6B2] uppercase tracking-wider flex items-center gap-1.5">
               <Sliders className="w-3.5 h-3.5" /> WCAG Accessibility
             </p>
-            <div className="grid grid-cols-2 gap-2 text-[10px] text-text-secondary">
+            <div className="grid grid-cols-2 gap-2 text-xs font-bold text-[#FBE4D8]">
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-success" />
-                High Contrast Support
+                <div className="w-2 h-2 rounded-full bg-[#0F3D3A]" />
+                High Contrast
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                <div className="w-2 h-2 rounded-full bg-[#0F3D3A]" />
                 Keyboard Navigation
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                <div className="w-2 h-2 rounded-full bg-[#0F3D3A]" />
                 Screen Reader Ready
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                <div className="w-2 h-2 rounded-full bg-[#0F3D3A]" />
                 WCAG 2.1 AA Target
               </div>
             </div>
@@ -416,36 +402,34 @@ export default function Settings() {
           <SettingSection icon={HardDrive} title="Storage & Session Data">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Stats */}
-              <div className="bg-bg-elevated border border-border-subtle rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-text-primary font-display">{dbStats.count}</div>
-                <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mt-1">Saved Sessions</div>
+              <div className="bg-[#190019] border-2 border-[#522B5B] rounded-2xl p-4 text-center shadow-[2px_2px_0px_#000000]">
+                <div className="text-3xl font-black text-[#FBE4D8] font-display">{dbStats.count}</div>
+                <div className="text-[10px] font-black text-[#DFB6B2] uppercase tracking-wider mt-1">Saved Sessions</div>
               </div>
-              <div className="bg-bg-elevated border border-border-subtle rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-text-primary font-display">{dbStats.estimatedSizeKB.toFixed(1)}</div>
-                <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mt-1">Kilobytes Used</div>
+              <div className="bg-[#190019] border-2 border-[#522B5B] rounded-2xl p-4 text-center shadow-[2px_2px_0px_#000000]">
+                <div className="text-3xl font-black text-[#FBE4D8] font-display">{dbStats.estimatedSizeKB.toFixed(1)}</div>
+                <div className="text-[10px] font-black text-[#DFB6B2] uppercase tracking-wider mt-1">Kilobytes Used</div>
               </div>
-              <div className="bg-bg-elevated border border-border-subtle rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-success font-display">∞</div>
-                <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mt-1">Storage Quota</div>
+              <div className="bg-[#190019] border-2 border-[#522B5B] rounded-2xl p-4 text-center shadow-[2px_2px_0px_#000000]">
+                <div className="text-3xl font-black text-[#DFB6B2] font-display">Unlimited</div>
+                <div className="text-[10px] font-black text-[#DFB6B2] uppercase tracking-wider mt-1">Storage Quota</div>
               </div>
 
               {/* Clear Data */}
-              <div className="sm:col-span-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-border-subtle/50">
+              <div className="sm:col-span-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t-2 border-[#522B5B]">
                 <div>
-                  <h4 className="text-xs font-bold text-text-primary">Delete All Saved Data</h4>
-                  <p className="text-[10px] text-text-secondary mt-0.5">
+                  <h4 className="text-xs font-black text-[#FBE4D8] uppercase">Delete All Saved Data</h4>
+                  <p className="text-xs font-bold text-[#DFB6B2] mt-0.5">
                     Permanently removes all session archives, AI summaries, and notes from this device
                   </p>
                 </div>
-                <Button
+                <button
                   onClick={() => setConfirmClearOpen(true)}
                   disabled={dbStats.count === 0}
-                  variant="danger"
-                  size="sm"
-                  icon={Trash2}
+                  className="px-5 py-2.5 rounded-full border-2 border-[#6C151E] bg-[#6C151E] hover:bg-[#854F6C] text-[#FBE4D8] font-black text-xs uppercase shadow-[2px_2px_0px_#000000] disabled:opacity-40"
                 >
                   Delete All Data
-                </Button>
+                </button>
               </div>
             </div>
           </SettingSection>

@@ -91,9 +91,9 @@ export default function LiveCaptionPanel() {
       >
         {finalTranscript.length === 0 && !interimText ? (
           <div className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-4">
-            <div className={`p-4 rounded-full border bg-bg-elevated ${isListening ? 'border-accent-coral/20 text-accent-coral' : 'border-border-subtle text-text-muted'}`}>
+            <div className={`p-4 rounded-full border bg-bg-elevated ${isListening ? 'border-[#6C151E]/20 text-[#6C151E]' : 'border-border-subtle text-text-muted'}`}>
               {isListening ? (
-                <Mic className="w-8 h-8 animate-pulse" />
+                <Mic className="w-8 h-8" />
               ) : (
                 <MicOff className="w-8 h-8" />
               )}

@@ -37,28 +37,28 @@ export default function StudentSessionBanner() {
     <div className="w-full mb-4">
       {activeSession ? (
         /* Connected Session Status Banner */
-        <div className="bg-gradient-to-r from-accent-teal/10 via-bg-surface to-accent-coral/10 border border-accent-teal/30 rounded-2xl p-4 shadow-lg backdrop-blur-md flex flex-wrap items-center justify-between gap-4">
+        <div className="bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl p-4 shadow-[4px_4px_0px_#000000] flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-accent-teal/20 text-accent-teal border border-accent-teal/40 shrink-0">
-              <Radio className="w-5 h-5 animate-pulse" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-bg-surface animate-ping" />
+            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-[#0F3D3A] text-[#FBE4D8] border-2 border-[#522B5B] shrink-0">
+              <Radio className="w-5 h-5" />
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#0F3D3A] rounded-full border-2 border-[#190019]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-accent-teal">Connected to Class Session</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <span className="text-xs font-black uppercase tracking-wider text-[#FBE4D8]">Connected to Class Session</span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide bg-[#0F3D3A] text-[#FBE4D8] border border-[#522B5B]">
                   Live Syncing
                 </span>
               </div>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-xs text-text-secondary">Session Join Code:</span>
-                <strong className="font-mono text-sm tracking-widest text-text-primary uppercase font-bold">
+                <span className="text-xs text-[#DFB6B2] font-bold">Session Join Code:</span>
+                <strong className="font-mono text-sm tracking-widest text-[#FBE4D8] uppercase font-black">
                   {activeSession.joinCode}
                 </strong>
                 <button
                   onClick={handleCopyCode}
                   title="Copy session code"
-                  className="p-1 text-text-tertiary hover:text-accent-teal transition-colors"
+                  className="p-1 text-[#DFB6B2] hover:text-[#FBE4D8] transition-colors"
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
@@ -69,7 +69,7 @@ export default function StudentSessionBanner() {
           <div className="flex items-center gap-2 ml-auto">
             <button
               onClick={leaveClassSession}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bg-elevated hover:bg-red-500/10 border border-border-subtle text-text-secondary hover:text-red-400 text-xs font-semibold transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#522B5B] hover:bg-[#6C151E] border-2 border-[#854F6C] text-[#FBE4D8] text-xs font-black uppercase shadow-[2px_2px_0px_#000000] transition-all"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Leave Session</span>
@@ -78,25 +78,23 @@ export default function StudentSessionBanner() {
         </div>
       ) : (
         /* Join Session Card for Student Access */
-        <div className="bg-bg-surface border border-border-subtle hover:border-accent-teal/40 rounded-2xl p-5 shadow-xl transition-all relative overflow-hidden group">
-          <div className="absolute -top-12 -right-12 w-40 h-40 bg-accent-teal/5 rounded-full blur-2xl group-hover:bg-accent-teal/10 transition-all pointer-events-none" />
-          
+        <div className="bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl p-5 shadow-[4px_4px_0px_#000000] transition-all relative overflow-hidden">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
             {/* Title & Info */}
             <div className="space-y-1 max-w-xl">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-accent-teal/10 text-accent-teal border border-accent-teal/20">
+                <div className="p-1.5 rounded-lg bg-[#522B5B] text-[#FBE4D8] border-2 border-[#854F6C]">
                   <Key className="w-4 h-4" />
                 </div>
-                <h3 className="text-base font-bold font-display text-text-primary tracking-wide">
+                <h3 className="text-base font-black font-display text-[#FBE4D8] tracking-wide uppercase">
                   Student Session Access
                 </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-bg-elevated text-text-tertiary border border-border-subtle">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#522B5B] text-[#FBE4D8] border border-[#854F6C]">
                   Join Teacher
                 </span>
               </div>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                Enter the 6-character classroom code provided by your instructor (e.g. <strong className="font-mono text-accent-teal">GJGY6F</strong>) to receive real-time captions, emphasis badges, and teacher alerts.
+              <p className="text-xs text-[#DFB6B2] font-bold leading-relaxed">
+                Enter the 6-character classroom code provided by your instructor (e.g. <strong className="font-mono text-[#FBE4D8]">GJGY6F</strong>) to receive real-time captions, emphasis badges, and teacher alerts.
               </p>
             </div>
 
@@ -109,14 +107,14 @@ export default function StudentSessionBanner() {
                   value={joinCodeInput}
                   onChange={(e) => setJoinCodeInput(e.target.value.toUpperCase())}
                   placeholder="e.g. GJGY6F"
-                  className="w-36 text-center tracking-widest uppercase font-mono text-sm font-bold py-2.5 px-3 bg-bg-elevated border border-border-subtle rounded-xl text-accent-teal focus:outline-none focus:border-accent-teal focus:ring-2 focus:ring-accent-teal/20 placeholder:text-text-muted transition-all"
+                  className="w-36 text-center tracking-widest uppercase font-mono text-sm font-black py-2 px-3 bg-[#190019] border-2 border-[#522B5B] rounded-xl text-[#FBE4D8] focus:outline-none focus:border-[#DFB6B2] transition-all"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading || !joinCodeInput.trim()}
-                className="flex items-center gap-1.5 px-4 py-2.5 bg-gradient-to-r from-accent-teal to-teal-500 hover:from-accent-teal/90 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed text-bg-base font-bold text-xs rounded-xl shadow-lg shadow-accent-teal/20 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2.5 bg-[#2B124C] hover:bg-[#190019] disabled:opacity-50 disabled:cursor-not-allowed text-[#FBE4D8] font-black text-xs uppercase rounded-full shadow-[2px_2px_0px_#190019] border-2 border-[#190019] transition-all cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>{loading ? 'Joining...' : 'Join Session'}</span>

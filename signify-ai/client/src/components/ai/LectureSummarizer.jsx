@@ -47,7 +47,7 @@ export default function LectureSummarizer() {
       {/* Action Button */}
       {!currentSummary && !loadingSummary && (
         <div className="glass-panel p-6 rounded-xl text-center space-y-4">
-          <Brain className="w-10 h-10 text-accent-coral mx-auto animate-pulse" />
+          <Brain className="w-10 h-10 text-[#2B124C] mx-auto" />
           <div>
             <h3 className="font-bold text-text-primary font-display text-sm">Generate Study Notes</h3>
             <p className="text-xs text-text-secondary mt-1">

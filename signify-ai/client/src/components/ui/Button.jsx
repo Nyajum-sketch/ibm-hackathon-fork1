@@ -13,12 +13,14 @@ export default function Button({
   icon: Icon = null,
   ...props
 }) {
-  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-accent-coral/50 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]';
+  const baseStyles = 'inline-flex items-center justify-center font-bold rounded-xl transition-all focus:outline-none disabled:opacity-50 disabled:pointer-events-none active:translate-x-[2px] active:translate-y-[2px]';
   
   const variants = {
-    primary: 'bg-accent-coral text-bg-base hover:bg-accent-coral-soft font-bold',
-    ghost: 'bg-transparent text-text-primary border border-border-subtle hover:bg-bg-elevated hover:border-accent-coral/30',
-    danger: 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 hover:text-red-300'
+    primary: 'bg-[#DFB6B2] text-[#190019] hover:bg-[#FBE4D8] border-2 border-[#DFB6B2] shadow-[3px_3px_0px_#000000] active:shadow-[1px_1px_0px_#000000]',
+    secondary: 'bg-[#522B5B] text-[#FBE4D8] hover:bg-[#854F6C] border-2 border-[#854F6C] shadow-[3px_3px_0px_#000000] active:shadow-[1px_1px_0px_#000000]',
+    ghost: 'bg-[#522B5B] text-[#FBE4D8] border-2 border-[#854F6C] hover:bg-[#854F6C] shadow-[3px_3px_0px_#000000] active:shadow-[1px_1px_0px_#000000]',
+    danger: 'bg-[#6C151E] text-white border-2 border-[#6C151E] hover:bg-[#854F6C] shadow-[3px_3px_0px_#000000] active:shadow-[1px_1px_0px_#000000]',
+    pill: 'bg-[#522B5B] text-[#FBE4D8] border-2 border-[#854F6C] rounded-full hover:bg-[#854F6C] shadow-[2px_2px_0px_#000000] active:shadow-[0px_0px_0px_#000000]'
   };
 
   const sizes = {

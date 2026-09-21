@@ -31,29 +31,29 @@ export default function AddonNavbarEntry() {
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2.5">
       {user ? (
         <div className="flex items-center gap-2">
           {/* Active Session Info */}
           {activeSession ? (
             <div
               onClick={() => navigate('/classroom')}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent-teal/10 hover:bg-accent-teal/20 border border-accent-teal/20 text-accent-teal text-xs font-bold cursor-pointer transition-all"
+              className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#522B5B] border-2 border-[#854F6C] text-[#FBE4D8] text-xs font-black shadow-[2px_2px_0px_#000000] cursor-pointer hover:bg-[#854F6C] transition-all"
             >
-              <span>Class Code: <strong className="font-mono text-sm tracking-wider">{activeSession.joinCode}</strong></span>
+              <span>CODE: <strong className="font-mono text-xs tracking-wider text-[#DFB6B2]">{activeSession.joinCode}</strong></span>
             </div>
           ) : role === 'teacher' ? (
             <button
               onClick={handleStartSession}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-coral/10 hover:bg-accent-coral/20 border border-accent-coral/30 text-accent-coral text-xs font-bold transition-all"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#522B5B] hover:bg-[#854F6C] border-2 border-[#854F6C] text-[#FBE4D8] text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000000] transition-all"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Start Class Session</span>
+              <span>Start Session</span>
             </button>
           ) : (
             <button
               onClick={() => setShowJoinModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-teal/10 hover:bg-accent-teal/20 border border-accent-teal/30 text-accent-teal text-xs font-bold transition-all"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#522B5B] hover:bg-[#854F6C] border-2 border-[#854F6C] text-[#FBE4D8] text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000000] transition-all"
             >
               <Key className="w-3.5 h-3.5" />
               <span>Join Class</span>
@@ -61,10 +61,10 @@ export default function AddonNavbarEntry() {
           )}
 
           {/* User Badge */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-bg-surface border border-border-subtle text-text-primary text-xs font-semibold">
-            {role === 'teacher' ? <Shield className="w-3.5 h-3.5 text-accent-teal" /> : <UserCheck className="w-3.5 h-3.5 text-accent-coral" />}
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#522B5B] border-2 border-[#854F6C] text-[#FBE4D8] text-xs font-black shadow-[2px_2px_0px_#000000]">
+            {role === 'teacher' ? <Shield className="w-3.5 h-3.5 text-[#DFB6B2]" /> : <UserCheck className="w-3.5 h-3.5 text-[#DFB6B2]" />}
             <span className="max-w-[100px] truncate">{user.name}</span>
-            <span className="uppercase text-[10px] px-1.5 py-0.5 rounded bg-bg-elevated font-mono text-text-tertiary">
+            <span className="uppercase text-[9px] px-2 py-0.5 rounded-full bg-[#2B124C] text-[#FBE4D8] font-black tracking-wider">
               {role}
             </span>
           </div>
@@ -72,9 +72,9 @@ export default function AddonNavbarEntry() {
           <button
             onClick={logout}
             title="Sign Out"
-            className="p-1.5 rounded-lg text-text-tertiary hover:text-red-400 hover:bg-red-500/10 transition-colors"
+            className="p-1 rounded-full border-2 border-[#854F6C] bg-[#522B5B] text-[#FBE4D8] hover:bg-[#6C151E] shadow-[2px_2px_0px_#000000] transition-colors"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-3.5 h-3.5" />
           </button>
         </div>
       ) : (
@@ -82,7 +82,7 @@ export default function AddonNavbarEntry() {
           {!activeSession && (
             <button
               onClick={() => setShowJoinModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-teal/10 hover:bg-accent-teal/20 border border-accent-teal/30 text-accent-teal text-xs font-bold transition-all"
+              className="flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#522B5B] hover:bg-[#854F6C] border-2 border-[#854F6C] text-[#FBE4D8] text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000000] transition-all"
             >
               <Key className="w-3.5 h-3.5" />
               <span>Join Class</span>
@@ -91,9 +91,9 @@ export default function AddonNavbarEntry() {
 
           <button
             onClick={() => setIsAuthModalOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-accent-coral/10 to-accent-teal/10 hover:from-accent-coral/20 hover:to-accent-teal/20 border border-accent-coral/30 text-text-primary text-xs font-bold transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#522B5B] hover:bg-[#854F6C] border-2 border-[#854F6C] text-[#FBE4D8] text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000000] transition-all"
           >
-            <LogIn className="w-3.5 h-3.5 text-accent-coral" />
+            <LogIn className="w-3.5 h-3.5 text-[#DFB6B2]" />
             <span>Sign In</span>
           </button>
         </div>
@@ -101,11 +101,11 @@ export default function AddonNavbarEntry() {
 
       {/* Join Session Modal via Portal */}
       {showJoinModal && ReactDOM.createPortal(
-        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-[#190019]/80 backdrop-blur-sm">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <div className="relative w-full max-w-sm transform overflow-hidden rounded-2xl bg-bg-surface border border-border-subtle p-6 text-left align-middle shadow-2xl transition-all my-8 text-text-primary space-y-4">
-              <h3 className="text-lg font-bold font-display">Join Class Session</h3>
-              <p className="text-xs text-text-secondary">Enter the 6-character code provided by your teacher:</p>
+            <div className="relative w-full max-w-sm transform overflow-hidden rounded-2xl bg-[#2B124C] border-2 border-[#522B5B] p-6 text-left align-middle shadow-[8px_8px_0px_#000000] transition-all my-8 text-[#FBE4D8] space-y-4">
+              <h3 className="text-xl font-black font-display uppercase tracking-tight text-[#FBE4D8]">Join Class Session</h3>
+              <p className="text-xs font-bold text-[#DFB6B2]">Enter the 6-character code provided by your teacher:</p>
               <form onSubmit={handleJoin} className="space-y-3">
                 <input
                   type="text"
@@ -113,19 +113,19 @@ export default function AddonNavbarEntry() {
                   value={joinInput}
                   onChange={e => setJoinInput(e.target.value.toUpperCase())}
                   placeholder="e.g. ABC123"
-                  className="w-full text-center tracking-widest uppercase font-mono text-lg font-bold py-2 bg-bg-elevated border border-border-subtle rounded-xl text-accent-teal focus:outline-none focus:border-accent-teal"
+                  className="w-full text-center tracking-widest uppercase font-mono text-xl font-black py-2.5 bg-[#190019] border-2 border-[#522B5B] rounded-xl text-[#FBE4D8] focus:outline-none focus:border-[#DFB6B2]"
                 />
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-2 pt-2">
                   <button
                     type="button"
                     onClick={() => setShowJoinModal(false)}
-                    className="px-3 py-2 text-xs font-semibold text-text-secondary hover:text-text-primary"
+                    className="px-4 py-2 text-xs font-black uppercase rounded-full border-2 border-[#854F6C] bg-[#522B5B] hover:bg-[#854F6C] text-[#FBE4D8] shadow-[2px_2px_0px_#000000]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-accent-teal text-bg-base font-bold text-xs rounded-xl hover:opacity-90 transition-opacity"
+                    className="px-5 py-2 bg-[#DFB6B2] text-[#190019] hover:bg-[#FBE4D8] border-2 border-[#DFB6B2] font-black text-xs uppercase rounded-full shadow-[2px_2px_0px_#000000]"
                   >
                     Join Session
                   </button>

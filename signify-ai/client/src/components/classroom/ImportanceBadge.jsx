@@ -4,6 +4,8 @@ import toast from 'react-hot-toast';
 import { useLectureStore } from '../../store/useLectureStore';
 import { useCaptionStore } from '../../store/useCaptionStore';
 
+import { MessageSquare, Target, AlertTriangle, HelpCircle, Sun } from 'lucide-react';
+
 const TECHNICAL_WORDS = [
   'quantum', 'derivative', 'mitochondria', 'theorem', 'integral', 'entropy',
   'photosynthesis', 'chlorophyll', 'algorithm', 'nucleotide', 'equation'
@@ -15,11 +17,11 @@ export default function ImportanceBadge() {
   const [badgeState, setBadgeState] = useState({
     type: 'NORMAL',
     text: 'Lecture in Progress',
-    icon: '💬',
+    Icon: MessageSquare,
     style: {
-      bg: 'rgba(255,255,255,0.05)',
-      border: '1px solid rgba(255,255,255,0.08)',
-      color: '#8A8A9A'
+      bg: '#2B124C',
+      border: '2px solid #522B5B',
+      color: '#FBE4D8'
     }
   });
 
@@ -37,11 +39,11 @@ export default function ImportanceBadge() {
     let nextState = {
       type: 'NORMAL',
       text: 'Lecture in Progress',
-      icon: '💬',
+      Icon: MessageSquare,
       style: {
-        bg: 'rgba(255,255,255,0.05)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        color: '#8A8A9A'
+        bg: '#2B124C',
+        border: '2px solid #522B5B',
+        color: '#FBE4D8'
       }
     };
 
@@ -51,42 +53,41 @@ export default function ImportanceBadge() {
       nextState = {
         type: 'HIGH_EXAM',
         text: 'EXAM ALERT',
-        icon: '🎯',
+        Icon: Target,
         style: {
-          bg: 'rgba(255,77,77,0.15)',
-          border: '1px solid rgba(255,77,77,0.5)',
-          color: '#FF4D4D'
+          bg: '#6C151E',
+          border: '2px solid #DFB6B2',
+          color: '#FBE4D8'
         }
       };
-      toast('⚠️ Exam topic detected — saving to study notes', {
+      toast('Exam topic detected — saving to study notes', {
         position: 'bottom-right',
-        icon: '⚠️',
         style: {
-          background: '#1C1C1F',
-          color: '#FF4D4D',
-          border: '1px solid rgba(255,77,77,0.2)'
+          background: '#190019',
+          color: '#DFB6B2',
+          border: '2px solid #522B5B'
         }
       });
     } else if (importance === 'high' && type === 'concept' && hasTechWord) {
       nextState = {
         type: 'SIMPLIFIED_AVAILABLE',
         text: 'Complex Topic — Tap to Simplify',
-        icon: '🤔',
+        Icon: HelpCircle,
         style: {
-          bg: 'rgba(96,165,250,0.12)',
-          border: '1px solid rgba(96,165,250,0.4)',
-          color: '#60A5FA'
+          bg: '#522B5B',
+          border: '2px solid #854F6C',
+          color: '#FBE4D8'
         }
       };
     } else if (['concept', 'formula'].includes(type) && importance !== 'low') {
       nextState = {
         type: 'IMPORTANT_CONCEPT',
         text: 'Key Concept',
-        icon: '🔆',
+        Icon: Sun,
         style: {
-          bg: 'rgba(251,146,60,0.12)',
-          border: '1px solid rgba(251,146,60,0.4)',
-          color: '#FB923C'
+          bg: '#522B5B',
+          border: '2px solid #854F6C',
+          color: '#FBE4D8'
         }
       };
     }
@@ -110,30 +111,20 @@ export default function ImportanceBadge() {
         <motion.button
           key={badgeState.type}
           initial={{ opacity: 0, y: -5 }}
-          animate={
-            badgeState.type === 'HIGH_EXAM'
-              ? { opacity: 1, y: 0, scale: [1, 1.04, 1] }
-              : { opacity: 1, y: 0, scale: 1 }
-          }
+          animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 5 }}
-          transition={
-            badgeState.type === 'HIGH_EXAM'
-              ? { scale: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' }, opacity: { duration: 0.25 } }
-              : { duration: 0.25 }
-          }
+          transition={{ duration: 0.25 }}
           onClick={badgeState.type === 'SIMPLIFIED_AVAILABLE' ? handleSimplifyTap : undefined}
-          className={`flex items-center gap-2 px-4 h-9 rounded-full font-medium text-[13px] whitespace-nowrap tracking-wide
-            ${badgeState.type === 'IMPORTANT_CONCEPT' ? 'shadow-[0_0_15px_rgba(251,146,60,0.2)]' : ''}
+          className={`flex items-center gap-2 px-4 h-9 rounded-full font-black text-xs whitespace-nowrap tracking-wider uppercase border-2 border-[#190019] shadow-[2px_2px_0px_#190019]
+            ${badgeState.type === 'IMPORTANT_CONCEPT' ? 'bg-[#DFB6B2] text-[#190019]' : ''}
           `}
           style={{
             backgroundColor: badgeState.style.bg,
-            border: badgeState.style.border,
             color: badgeState.style.color,
             cursor: badgeState.type === 'SIMPLIFIED_AVAILABLE' ? 'pointer' : 'default',
-            fontFamily: '"DM Sans", sans-serif'
           }}
         >
-          <span>{badgeState.icon}</span>
+          {badgeState.Icon && <badgeState.Icon className="w-4 h-4" />}
           <span>{badgeState.text}</span>
         </motion.button>
         </AnimatePresence>

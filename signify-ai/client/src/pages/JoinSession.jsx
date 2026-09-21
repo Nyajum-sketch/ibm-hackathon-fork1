@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import ParallaxBackground from '../components/layout/ParallaxBackground';
 
 export default function JoinSession() {
   const { sessionId } = useParams();
@@ -98,9 +99,11 @@ export default function JoinSession() {
   return (
     <div
       onClick={cycleFontSize}
-      className="min-h-screen bg-black flex flex-col select-none"
+      className="min-h-screen bg-[#190019] text-[#FBE4D8] flex flex-col select-none relative"
       style={{ fontFamily: '"DM Sans", sans-serif' }}
     >
+      <ParallaxBackground />
+
       {/* Hide scrollbars globally on this page */}
       <style>{`
         ::-webkit-scrollbar { display: none; }
@@ -108,27 +111,25 @@ export default function JoinSession() {
       `}</style>
 
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] flex-shrink-0">
-        <span className="text-[#FF4D4D] font-bold tracking-widest text-sm" style={{ fontFamily: '"Syne", sans-serif' }}>
-          SIGNIFY AI
-        </span>
+      <div className="flex items-center justify-between px-6 py-4 bg-[#2B124C] border-b-2 border-[#522B5B] flex-shrink-0 shadow-[0_2px_0_#000000]">
+        <div className="flex items-center gap-2 bg-[#190019] text-[#FBE4D8] px-3 py-1 rounded-full border-2 border-[#522B5B] shadow-[2px_2px_0px_#000000]">
+          <span className="font-black text-sm uppercase tracking-wider font-display">
+            SIGNIFY<span className="text-[#DFB6B2]">AI</span>
+          </span>
+        </div>
 
         <div className="flex items-center gap-3">
           {status === 'live' && (
-            <div className="flex items-center gap-1.5">
-              <motion.div
-                animate={{ opacity: [1, 0.3, 1] }}
-                transition={{ repeat: Infinity, duration: 1.2 }}
-                className="w-2 h-2 rounded-full bg-[#4ADE80]"
-              />
-              <span className="text-[11px] text-[#4ADE80] font-bold uppercase tracking-wider">Live</span>
+            <div className="flex items-center gap-2 px-3 py-1 bg-[#190019] text-[#FBE4D8] rounded-full border-2 border-[#522B5B] shadow-[2px_2px_0px_#000000]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#0F3D3A]" />
+              <span className="text-xs font-black uppercase tracking-wider">Live Stream</span>
             </div>
           )}
           {status === 'error' && (
-            <span className="text-[11px] text-[#666] font-medium">Reconnecting...</span>
+            <span className="text-xs font-black text-[#FBE4D8] bg-[#6C151E] px-3 py-1 rounded-full border-2 border-[#854F6C]">Reconnecting...</span>
           )}
           {status === 'connecting' && (
-            <span className="text-[11px] text-[#666] font-medium">Connecting...</span>
+            <span className="text-xs font-black text-[#FBE4D8] bg-[#522B5B] px-3 py-1 rounded-full border-2 border-[#854F6C]">Connecting...</span>
           )}
         </div>
       </div>
@@ -136,22 +137,20 @@ export default function JoinSession() {
       {/* Caption stream */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-5 py-6 flex flex-col justify-end gap-4"
+        className="flex-1 overflow-y-auto px-6 py-8 flex flex-col justify-end gap-5 max-w-4xl w-full mx-auto"
         style={{ scrollBehavior: 'smooth' }}
       >
         {lines.length === 0 && (
-          <div className="text-center text-[#333] text-base py-16">
-            Waiting for the teacher to start speaking...
-            <br />
-            <span className="text-[#222] text-sm mt-2 block">Tap anywhere to change font size</span>
+          <div className="text-center bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl p-8 shadow-[4px_4px_0px_#000000] my-auto">
+            <p className="text-[#FBE4D8] text-lg font-black uppercase font-display">Waiting for teacher to speak...</p>
+            <p className="text-[#DFB6B2] text-xs font-bold mt-2">Tap anywhere on screen to cycle caption font size</p>
           </div>
         )}
 
         <AnimatePresence initial={false}>
           {lines.map((lineObj, idx) => {
             const age = lines.length - 1 - idx;
-            const textColor = age === 0 ? '#FFFFFF' : age === 1 ? '#999999' : age === 2 ? '#555555' : '#333333';
-            const translatedColor = '#FF4D4D';
+            const isLatest = age === 0;
 
             return (
               <motion.div
@@ -159,14 +158,21 @@ export default function JoinSession() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="flex flex-col gap-1"
+                className={`p-5 rounded-2xl border-2 transition-all ${
+                  isLatest
+                    ? 'bg-[#2B124C] text-[#FBE4D8] border-[#DFB6B2] shadow-[4px_4px_0px_#000000]'
+                    : 'bg-[#2B124C]/80 text-[#DFB6B2] border-[#522B5B] shadow-[2px_2px_0px_#000000]'
+                }`}
               >
-                <p style={{ fontSize: `${fontSize}px`, color: textColor, lineHeight: 1.6, transition: 'color 0.5s ease' }}>
+                <p style={{ fontSize: `${fontSize}px`, lineHeight: 1.5, fontWeight: isLatest ? 800 : 700 }}>
                   {lineObj.line}
                 </p>
                 {lineObj.translated && lineObj.translated !== lineObj.line && (
-                  <p style={{ fontSize: `${fontSize - 4}px`, color: translatedColor, lineHeight: 1.5, fontStyle: 'italic' }}>
-                    {lineObj.translated}
+                  <p 
+                    className="border-t-2 border-[#522B5B] pt-2 mt-2 font-bold text-[#DFB6B2]"
+                    style={{ fontSize: `${Math.max(14, fontSize - 6)}px`, lineHeight: 1.4 }}
+                  >
+                    Subtitles: {lineObj.translated}
                   </p>
                 )}
               </motion.div>
@@ -176,11 +182,11 @@ export default function JoinSession() {
       </div>
 
       {/* Bottom bar */}
-      <div className="flex items-center justify-between px-5 py-3 border-t border-[#1a1a1a] flex-shrink-0">
-        <span className="text-[11px] text-[#333] font-medium">
-          Powered by SIGNIFY AI
+      <div className="flex items-center justify-between px-6 py-3 bg-[#2B124C] border-t-2 border-[#522B5B] flex-shrink-0">
+        <span className="text-xs font-black uppercase text-[#DFB6B2]">
+          POWERED BY SIGNIFY AI
         </span>
-        <span className="text-[11px] text-[#444] font-mono">
+        <span className="text-xs font-mono font-black text-[#FBE4D8] bg-[#522B5B] border-2 border-[#854F6C] px-3 py-1 rounded-full shadow-[2px_2px_0px_#000000]">
           {formatTimer(elapsed)}
         </span>
       </div>

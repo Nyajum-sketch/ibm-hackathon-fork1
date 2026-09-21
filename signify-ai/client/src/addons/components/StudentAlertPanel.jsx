@@ -134,20 +134,20 @@ export default function StudentAlertPanel() {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-lg transform overflow-hidden rounded-3xl bg-bg-surface border-4 border-red-500 p-6 sm:p-8 text-left align-middle shadow-2xl transition-all my-8 text-text-primary text-center space-y-6 animate-pulse"
+                className="relative w-full max-w-lg transform overflow-hidden rounded-3xl bg-[#2B124C] border-4 border-[#6C151E] p-6 sm:p-8 text-left align-middle shadow-2xl transition-all my-8 text-[#FBE4D8] text-center space-y-6"
               >
-                <div className="w-20 h-20 rounded-full bg-red-500/20 text-red-500 mx-auto flex items-center justify-center border-2 border-red-500/50">
-                  <ShieldAlert className="w-12 h-12 animate-bounce" />
+                <div className="w-20 h-20 rounded-full bg-[#6C151E]/20 text-[#DFB6B2] mx-auto flex items-center justify-center border-2 border-[#6C151E]/60">
+                  <ShieldAlert className="w-12 h-12" />
                 </div>
 
                 <div>
-                  <span className="px-3.5 py-1 rounded-full bg-red-500 text-white font-mono text-xs font-black uppercase tracking-widest">
+                  <span className="px-3.5 py-1 rounded-full bg-[#6C151E] text-white font-mono text-xs font-black uppercase tracking-widest">
                     CRITICAL EMERGENCY ALERT
                   </span>
-                  <h2 className="text-2xl sm:text-3xl font-black font-display text-red-400 mt-3 leading-tight">
+                  <h2 className="text-2xl sm:text-3xl font-black font-display text-[#DFB6B2] mt-3 leading-tight">
                     {emergencyAlert.message || 'EMERGENCY IN CLASSROOM'}
                   </h2>
-                  <p className="text-xs text-text-secondary mt-2">
+                  <p className="text-xs text-[#DFB6B2] mt-2 font-bold">
                     Issued by instructor • Follow classroom emergency instructions immediately
                   </p>
                 </div>
@@ -155,7 +155,7 @@ export default function StudentAlertPanel() {
                 {/* Acknowledge Button */}
                 <button
                   onClick={() => acknowledgeAlert(emergencyAlert.id)}
-                  className="w-full py-4 px-6 bg-red-600 hover:bg-red-500 text-white font-bold text-base rounded-2xl shadow-xl shadow-red-600/40 flex items-center justify-center gap-2 transition-all transform hover:scale-[1.02]"
+                  className="w-full py-4 px-6 bg-[#6C151E] hover:bg-[#854F6C] text-white font-black text-base rounded-2xl shadow-xl shadow-[#6C151E]/40 flex items-center justify-center gap-2 transition-all"
                 >
                   <CheckCircle className="w-6 h-6" />
                   <span>ACKNOWLEDGE EMERGENCY</span>
@@ -171,21 +171,21 @@ export default function StudentAlertPanel() {
         
         {/* Session Join Enable Alerts Card */}
         {activeSession && !alertsEnabled && (
-          <div className="pointer-events-auto p-3.5 rounded-2xl bg-bg-surface/95 border border-accent-coral/40 shadow-2xl backdrop-blur-md flex items-center justify-between gap-3 text-xs">
+          <div className="pointer-events-auto p-3.5 rounded-2xl bg-[#2B124C] border-2 border-[#522B5B] shadow-2xl flex items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-accent-coral/10 text-accent-coral border border-accent-coral/20 shrink-0">
+              <div className="p-2 rounded-xl bg-[#522B5B] text-[#FBE4D8] border border-[#854F6C] shrink-0">
                 <Smartphone className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="font-bold text-text-primary">Enable Haptic & Audio Alerts</h4>
-                <p className="text-[10px] text-text-secondary">
+                <h4 className="font-black text-[#FBE4D8]">Enable Haptic & Audio Alerts</h4>
+                <p className="text-[10px] text-[#DFB6B2] font-bold">
                   {vibrationSupported ? 'Vibration & sound ready' : 'Fallback visual flash & sound active'}
                 </p>
               </div>
             </div>
             <button
               onClick={enableAlertsHandler}
-              className="px-3 py-1.5 bg-accent-coral text-bg-base font-bold rounded-xl text-xs hover:opacity-90 transition-opacity shrink-0"
+              className="px-3 py-1.5 bg-[#522B5B] text-[#FBE4D8] font-black rounded-xl text-xs hover:bg-[#854F6C] border border-[#854F6C] transition-colors shrink-0"
             >
               Enable
             </button>
@@ -200,18 +200,18 @@ export default function StudentAlertPanel() {
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              className="pointer-events-auto p-3.5 rounded-2xl bg-bg-surface/95 border border-accent-teal/40 shadow-2xl backdrop-blur-md text-text-primary space-y-2.5"
+              className="pointer-events-auto p-3.5 rounded-2xl bg-[#2B124C] border-2 border-[#522B5B] shadow-2xl text-[#FBE4D8] space-y-2.5"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-accent-teal/10 text-accent-teal border border-accent-teal/20 shrink-0">
-                    <Bell className="w-4 h-4 animate-pulse" />
+                  <div className="p-2 rounded-xl bg-[#522B5B] text-[#FBE4D8] border border-[#854F6C] shrink-0">
+                    <Bell className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-accent-teal">
+                    <span className="text-[9px] font-mono font-black uppercase tracking-wider text-[#DFB6B2]">
                       {alert.type.replace('_', ' ')}
                     </span>
-                    <h4 className="text-xs font-bold text-text-primary leading-snug">{alert.message}</h4>
+                    <h4 className="text-xs font-black text-[#FBE4D8] leading-snug">{alert.message}</h4>
                   </div>
                 </div>
 
