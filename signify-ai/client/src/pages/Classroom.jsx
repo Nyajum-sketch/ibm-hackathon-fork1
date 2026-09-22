@@ -252,7 +252,13 @@ export default function Classroom() {
               <Languages className="w-4 h-4 text-[#DFB6B2]" />
               <select
                 value={targetLanguage}
-                onChange={(e) => settingsActions.setTargetLanguage(e.target.value)}
+                onChange={(e) => {
+                  const newLang = e.target.value;
+                  settingsActions.setTargetLanguage(newLang);
+                  if (newLang !== 'en' && !autoTranslate) {
+                    settingsActions.toggleAutoTranslate();
+                  }
+                }}
                 className="bg-[#190019] border-2 border-[#854F6C] rounded-full px-3 py-1 text-xs font-black text-[#FBE4D8] shadow-[2px_2px_0px_#000000] focus:outline-none cursor-pointer"
               >
                 {SUPPORTED_LANGUAGES.map((lang) => (
@@ -269,7 +275,12 @@ export default function Classroom() {
                 <input
                   type="checkbox"
                   checked={autoTranslate}
-                  onChange={settingsActions.toggleAutoTranslate}
+                  onChange={() => {
+                    settingsActions.toggleAutoTranslate();
+                    if (!autoTranslate && targetLanguage === 'en') {
+                      settingsActions.setTargetLanguage('es');
+                    }
+                  }}
                   className="rounded border-2 border-[#DFB6B2] text-[#DFB6B2] focus:ring-0 cursor-pointer w-4 h-4"
                 />
                 <span className="text-[11px] uppercase font-black tracking-wider text-[#FBE4D8]">Translate</span>

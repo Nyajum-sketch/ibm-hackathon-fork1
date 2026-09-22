@@ -7,7 +7,7 @@ import ImportanceBadge from './ImportanceBadge';
 import { useAddons, EmphasisBadge } from '../../addons';
 
 export default function LiveCaptionPanel() {
-  const { finalTranscript, interimText, translatedLines, isListening } = useCaptionStore();
+  const { finalTranscript, interimText, interimTranslation, translatedLines, isListening } = useCaptionStore();
   const { sessionTags } = useAddons();
   const { 
     captionFontSize, 
@@ -53,7 +53,7 @@ export default function LiveCaptionPanel() {
         behavior: 'smooth'
       });
     }
-  }, [finalTranscript, interimText, translatedLines]);
+  }, [finalTranscript, interimText, interimTranslation, translatedLines]);
 
   return (
     <div className="flex-1 min-h-0 h-full flex flex-col bg-bg-surface border border-border-subtle rounded-xl overflow-hidden relative">
@@ -144,6 +144,11 @@ export default function LiveCaptionPanel() {
                 <p className={`font-semibold italic tracking-wide text-text-secondary select-none animate-pulse ${currentFontSizeClass}`}>
                   {interimText}...
                 </p>
+                {autoTranslate && interimTranslation && (
+                  <p className={`italic select-none ${textTranslationColor} ${currentFontSizeClass.replace('text-', 'text-base md:text-')}`}>
+                    {interimTranslation}...
+                  </p>
+                )}
               </div>
             )}
           </div>

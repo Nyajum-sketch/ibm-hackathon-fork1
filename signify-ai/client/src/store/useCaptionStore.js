@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const useCaptionStore = create((set) => ({
   interimText: '',
+  interimTranslation: '',
   finalTranscript: [],
   translatedLines: [],
   isListening: false,
@@ -22,11 +23,13 @@ export const useCaptionStore = create((set) => ({
       return {
         finalTranscript: newFinal,
         interimText: '',
+        interimTranslation: '',
         wordCount: state.wordCount + newWords
       };
     }),
     
     setInterimText: (text) => set({ interimText: text }),
+    setInterimTranslation: (text) => set({ interimTranslation: text }),
     
     setTranslatedLine: (index, text) => set((state) => {
       const newTranslated = [...state.translatedLines];
@@ -43,6 +46,7 @@ export const useCaptionStore = create((set) => ({
       sessionId: uuidv4(),
       startTime: new Date(),
       interimText: '',
+      interimTranslation: '',
       finalTranscript: [],
       translatedLines: [],
       wordCount: 0,
@@ -53,6 +57,7 @@ export const useCaptionStore = create((set) => ({
     
     clearTranscript: () => set({
       interimText: '',
+      interimTranslation: '',
       finalTranscript: [],
       translatedLines: [],
       wordCount: 0,

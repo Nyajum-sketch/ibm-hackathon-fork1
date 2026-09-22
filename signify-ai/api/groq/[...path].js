@@ -315,5 +315,39 @@ If the content is just filler or transition words, use type "normal" and importa
     }
   }
 
+  // --- POST /api/groq/translate ---
+  if (req.method === 'POST' && pathname.endsWith('/translate')) {
+    const { text, targetLang = 'es', apiKey: customKey } = req.body;
+    const clientKey = customKey || req.headers['x-groq-api-key'];
+
+    if (!text || !text.trim()) {
+      return res.json({ translatedText: '' });
+    }
+
+    const groq = getGroqClient(clientKey);
+
+    if (!groq) {
+      return res.json({ translatedText: text });
+    }
+
+    try {
+      const model = await getGroqModel(groq);
+      const response = await groq.chat.completions.create({
+        model,
+        messages: [
+          { role: 'system', content: `You are an ultra-fast real-time speech translator for deaf students. Translate the user's text into ${targetLang} language. Output ONLY the translated text, no quotes, no conversational filler, no notes.` },
+          { role: 'user', content: text }
+        ],
+        stream: false
+      });
+
+      const translatedText = response.choices[0]?.message?.content?.trim() || text;
+      return res.json({ translatedText });
+    } catch (error) {
+      console.error('Groq translation error:', error);
+      return res.json({ translatedText: text, error: error.message });
+    }
+  }
+
   return res.status(404).json({ error: 'Route not found' });
 }

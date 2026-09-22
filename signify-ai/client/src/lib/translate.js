@@ -58,10 +58,10 @@ export const SUPPORTED_LANGUAGES = [
 ];
 
 /**
- * Translates English text to a target language code using MyMemory free API.
+ * Translates English text to a target language code using Groq AI (with fallback to MyMemory free API).
  * Uses a caching layer to avoid duplicate requests.
  * @param {string} text - Text to translate.
- * @param {string} targetLang - Two-letter ISO language code (e.g. 'es', 'fr').
+ * @param {string} targetLang - Two-letter ISO language code (e.g. 'es', 'fr', 'ta', 'hi').
  * @returns {Promise<string>} - The translated string.
  */
 export async function translateText(text, targetLang) {
@@ -73,6 +73,38 @@ export async function translateText(text, targetLang) {
     return translationCache.get(cacheKey);
   }
 
+  // 1. First try Groq AI translation for ultra-fast, contextual real-time translation
+  try {
+    const groqKey = typeof localStorage !== 'undefined' ? localStorage.getItem('signify-groq-key') : '';
+    const langObj = SUPPORTED_LANGUAGES.find(l => l.code === targetLang);
+    const langName = langObj ? langObj.name : targetLang;
+
+    const res = await fetch('/api/groq/translate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(groqKey ? { 'x-groq-api-key': groqKey } : {})
+      },
+      body: JSON.stringify({
+        text: text.trim(),
+        targetLang: langName,
+        apiKey: groqKey
+      })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.translatedText && data.translatedText.trim() && data.translatedText.trim() !== text.trim()) {
+        const result = data.translatedText.trim();
+        translationCache.set(cacheKey, result);
+        return result;
+      }
+    }
+  } catch (groqErr) {
+    console.warn('Groq translation service not reached, falling back to MyMemory:', groqErr);
+  }
+
+  // 2. Fallback to MyMemory translation API
   try {
     const cleanText = encodeURIComponent(text.trim());
     const url = `https://api.mymemory.translated.net/get?q=${cleanText}&langpair=en|${targetLang}`;
@@ -97,3 +129,4 @@ export async function translateText(text, targetLang) {
     return text; // Fallback to source on error
   }
 }
+

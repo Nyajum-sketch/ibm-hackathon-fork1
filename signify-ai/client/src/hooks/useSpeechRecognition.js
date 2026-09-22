@@ -102,13 +102,9 @@ export function useSpeechRecognition() {
     rec.continuous = true;
     rec.interimResults = true;
     
-    // Choose speech language according to settings or browser locale
+    // Speech recognition input language (what the speaker is speaking, e.g. English)
     const browserLang = typeof navigator !== 'undefined' ? navigator.language : 'en-US';
-    if (targetLanguage === 'en' && browserLang.startsWith('en')) {
-      rec.lang = browserLang;
-    } else {
-      rec.lang = BCP47_MAP[targetLanguage] || browserLang || 'en-US';
-    }
+    rec.lang = browserLang || 'en-US';
 
     rec.onstart = () => {
       console.log('Speech recognition started');
@@ -192,7 +188,7 @@ export function useSpeechRecognition() {
       }
       isRecognizingRef.current = false;
     };
-  }, [actions, targetLanguage]);
+  }, [actions]);
 
   // Keep refs in sync with latest state values
   useEffect(() => {
@@ -367,7 +363,7 @@ export function useSpeechRecognition() {
     }
   };
 
-  const toggleListening = async () => {
+  const toggleListening = () => {
     if (isDemoMode) {
       setIsDemoMode(false);
     }
@@ -378,24 +374,6 @@ export function useSpeechRecognition() {
       if (!SpeechRecognition) {
         toast.error('Web Speech API is not supported in this browser. Please use Chrome, Edge, or try Demo mode!');
         return;
-      }
-
-      // Explicitly check & request microphone permissions
-      if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          // Release probe stream tracks so speech recognition can bind cleanly
-          stream.getTracks().forEach(track => track.stop());
-        } catch (err) {
-          console.error('Microphone permission request failed:', err);
-          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-            toast.error('Microphone access denied. Please allow microphone permissions in your browser address bar.');
-            return;
-          } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-            toast.error('No microphone found on your device. Please plug in or connect a microphone.');
-            return;
-          }
-        }
       }
 
       actions.startSession();
