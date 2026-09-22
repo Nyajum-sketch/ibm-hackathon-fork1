@@ -1097,52 +1097,58 @@ html.light .bg-grid-pattern {
   }
 }
 
-/* Kinetic Text Styles */
+/* Kinetic Text Styles - Ultra Smooth Fluid Motion */
 .kinetic-text-wrapper {
   display: inline-flex;
   flex-wrap: wrap;
-  font-weight: 300;
+  font-weight: 400;
   font-optical-sizing: auto;
+  letter-spacing: -0.02em;
 }
 
 .kinetic-letter {
   display: inline-block;
-  will-change: font-weight, -webkit-text-stroke-width, padding;
-  -webkit-text-stroke-color: transparent;
-  -webkit-text-stroke-width: var(--text-stroke-width);
-  transition: font-weight 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
-              -webkit-text-stroke-color 0.4s ease,
-              -webkit-text-stroke-width 0.4s ease,
-              padding 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  will-change: transform, font-weight, color;
+  transform: translateZ(0);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              font-weight 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.35s ease;
 }
 
 .kinetic-letter:hover {
-  font-weight: 900 !important;
-  padding-inline: var(--hover-padding);
-  -webkit-text-stroke-color: currentColor;
-  -webkit-text-stroke-width: calc(var(--text-stroke-width) * 2);
+  font-weight: 800 !important;
+  transform: translateY(-8px) scale(1.08) translateZ(0);
+  color: #FFFFFF !important;
+  z-index: 10;
 }
 
 /* Sibling following hover (+1) */
 .kinetic-letter:hover + .kinetic-letter {
-  font-weight: 600 !important;
-  padding-inline: var(--hover-padding);
+  font-weight: 700 !important;
+  transform: translateY(-4px) scale(1.04) translateZ(0);
+  z-index: 5;
 }
 
 /* Sibling following hover (+2) */
 .kinetic-letter:hover + .kinetic-letter + .kinetic-letter {
-  font-weight: 400 !important;
+  font-weight: 600 !important;
+  transform: translateY(-2px) scale(1.02) translateZ(0);
+  z-index: 2;
 }
 
 /* Sibling preceding hover (-1) */
 .kinetic-letter:has(+ .kinetic-letter:hover) {
-  font-weight: 600 !important;
-  padding-inline: var(--hover-padding);
+  font-weight: 700 !important;
+  transform: translateY(-4px) scale(1.04) translateZ(0);
+  z-index: 5;
 }
 
 /* Sibling preceding hover (-2) */
 .kinetic-letter:has(+ .kinetic-letter + .kinetic-letter:hover) {
-  font-weight: 400 !important;
+  font-weight: 600 !important;
+  transform: translateY(-2px) scale(1.02) translateZ(0);
+  z-index: 2;
 }
 
 /* MagicUI Ripple Animation */
