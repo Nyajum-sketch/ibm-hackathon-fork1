@@ -125,18 +125,48 @@ function getMockAnswer(question, transcript) {
 }
 
 // Initialize Groq client if key is configured
-const getGroqClient = () => {
-  const apiKey = process.env.GROQ_API_KEY;
+const getGroqClient = (customKey) => {
+  const apiKey = customKey || process.env.GROQ_API_KEY;
   if (!apiKey || apiKey === 'your_key_here' || apiKey.trim() === '') {
     return null;
   }
   return new Groq({ apiKey });
 };
 
+let cachedModel = null;
+const getGroqModel = async (groq) => {
+  if (cachedModel) return cachedModel;
+  try {
+    const list = await groq.models.list();
+    const ids = list.data.map(m => m.id);
+    const candidates = [
+      'openai/gpt-oss-120b',
+      'openai/gpt-oss-20b',
+      'qwen/qwen3.8-27b',
+      'llama-3.3-70b-versatile',
+      'llama-3.1-70b-versatile',
+      'llama-3.1-8b-instant',
+      'llama3-70b-8192',
+      'llama3-8b-8192'
+    ];
+    for (const c of candidates) {
+      if (ids.includes(c)) {
+        cachedModel = c;
+        return c;
+      }
+    }
+    cachedModel = ids[0] || 'openai/gpt-oss-120b';
+    return cachedModel;
+  } catch (e) {
+    return 'openai/gpt-oss-120b';
+  }
+};
+
 // 1. POST /api/groq/summarize
 router.post('/summarize', async (req, res) => {
   try {
-    const { transcript, language = 'English' } = req.body;
+    const { transcript, language = 'English', apiKey: customKey } = req.body;
+    const clientKey = customKey || req.headers['x-groq-api-key'];
     
     // Validation
     if (!transcript || transcript.length < 50) {
@@ -145,13 +175,15 @@ router.post('/summarize', async (req, res) => {
       });
     }
 
-    const groq = getGroqClient();
+    const groq = getGroqClient(clientKey);
     
     if (!groq) {
       console.warn('Groq API Key not set. Falling back to local mock summarization.');
       const mockResult = generateMockSummary(transcript, language);
       return res.json(mockResult);
     }
+
+    const model = await getGroqModel(groq);
 
     const systemPrompt = `You are an educational AI assistant for deaf students. Analyze the following lecture transcript and provide:
 1) A concise 3-paragraph summary (with clean Markdown subheaders if appropriate).
@@ -161,7 +193,7 @@ Format with clear markdown headers. Be educational, clear, and structured.
 Return the output strictly in valid JSON format with keys: "summary" (string containing markdown), "keyPoints" (array of 5 strings), and "examQuestions" (array of 3 strings). Keep the response in ${language} language.`;
 
     const response = await groq.chat.completions.create({
-      model: 'llama3-70b-8192',
+      model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Here is the lecture transcript to analyze: \n\n${transcript}` }
@@ -192,7 +224,8 @@ Return the output strictly in valid JSON format with keys: "summary" (string con
 
 // 2. POST /api/groq/ask (SSE Stream)
 router.post('/ask', async (req, res) => {
-  const { question, transcript, language = 'English' } = req.body;
+  const { question, transcript, language = 'English', apiKey: customKey } = req.body;
+  const clientKey = customKey || req.headers['x-groq-api-key'];
 
   // Validation
   if (!question || question.length < 5) {
@@ -210,7 +243,7 @@ router.post('/ask', async (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
 
-  const groq = getGroqClient();
+  const groq = getGroqClient(clientKey);
 
   if (!groq) {
     console.warn('Groq API Key not set. Streaming mock response.');
@@ -237,10 +270,11 @@ router.post('/ask', async (req, res) => {
   }
 
   try {
+    const model = await getGroqModel(groq);
     const systemPrompt = `You are a helpful tutor for a deaf student. You have access to the lecture transcript below. Answer the student's question clearly and concisely in ${language} based on the lecture content. If the answer isn't in the transcript, say so and provide general knowledge. Keep the response educational and easy to follow.`;
     
     const stream = await groq.chat.completions.create({
-      model: 'llama3-70b-8192',
+      model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Lecture Transcript:\n${transcript}\n\nStudent's Question:\n${question}` }
@@ -282,13 +316,14 @@ router.post('/ask', async (req, res) => {
 
 // 3. POST /api/groq/analyze-chunk
 router.post('/analyze-chunk', async (req, res) => {
-  const { chunk, timestamp, sessionId } = req.body;
+  const { chunk, timestamp, sessionId, apiKey: customKey } = req.body;
+  const clientKey = customKey || req.headers['x-groq-api-key'];
 
   if (!chunk || chunk.trim().length < 10) {
     return res.json({ type: 'normal', importance: 'low', label: '', reason: '' });
   }
 
-  const groq = getGroqClient();
+  const groq = getGroqClient(clientKey);
 
   // Demo fallback for chunk analysis
   if (!groq) {
@@ -297,6 +332,7 @@ router.post('/analyze-chunk', async (req, res) => {
   }
 
   try {
+    const model = await getGroqModel(groq);
     const systemPrompt = `You are analyzing a live lecture transcript chunk for a deaf student accessibility app.
 Classify this chunk and respond ONLY with valid JSON, no markdown:
 {
@@ -308,7 +344,7 @@ Classify this chunk and respond ONLY with valid JSON, no markdown:
 If the content is just filler or transition words, use type "normal" and importance "low".`;
 
     const response = await groq.chat.completions.create({
-      model: 'llama3-70b-8192',
+      model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: chunk }

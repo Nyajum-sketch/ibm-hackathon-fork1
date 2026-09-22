@@ -119,19 +119,48 @@ function getMockAnswer(question, transcript) {
   return `This is a helpful response generated in offline/mock tutor mode. You asked: "${question}". Based on the transcript for "${topic}", this lecture is introducing foundational concepts, defining core parameters, and providing relevant examples to ensure students understand the material. Let me know if you need specific details about keywords in the transcript!`;
 }
 
-const getGroqClient = () => {
-  const apiKey = process.env.GROQ_API_KEY;
+const getGroqClient = (customKey) => {
+  const apiKey = customKey || process.env.GROQ_API_KEY;
   if (!apiKey || apiKey === 'your_key_here' || apiKey.trim() === '') {
     return null;
   }
   return new Groq({ apiKey });
 };
 
+let cachedModel = null;
+const getGroqModel = async (groq) => {
+  if (cachedModel) return cachedModel;
+  try {
+    const list = await groq.models.list();
+    const ids = list.data.map(m => m.id);
+    const candidates = [
+      'openai/gpt-oss-120b',
+      'openai/gpt-oss-20b',
+      'qwen/qwen3.8-27b',
+      'llama-3.3-70b-versatile',
+      'llama-3.1-70b-versatile',
+      'llama-3.1-8b-instant',
+      'llama3-70b-8192',
+      'llama3-8b-8192'
+    ];
+    for (const c of candidates) {
+      if (ids.includes(c)) {
+        cachedModel = c;
+        return c;
+      }
+    }
+    cachedModel = ids[0] || 'openai/gpt-oss-120b';
+    return cachedModel;
+  } catch (e) {
+    return 'openai/gpt-oss-120b';
+  }
+};
+
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key, x-groq-api-key');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -142,7 +171,8 @@ export default async function handler(req, res) {
   // --- POST /api/groq/summarize ---
   if (req.method === 'POST' && pathname.endsWith('/summarize')) {
     try {
-      const { transcript, language = 'English' } = req.body;
+      const { transcript, language = 'English', apiKey: customKey } = req.body;
+      const clientKey = customKey || req.headers['x-groq-api-key'];
 
       if (!transcript || transcript.length < 50) {
         return res.status(400).json({
@@ -150,12 +180,14 @@ export default async function handler(req, res) {
         });
       }
 
-      const groq = getGroqClient();
+      const groq = getGroqClient(clientKey);
 
       if (!groq) {
         const mockResult = generateMockSummary(transcript, language);
         return res.json(mockResult);
       }
+
+      const model = await getGroqModel(groq);
 
       const systemPrompt = `You are an educational AI assistant for deaf students. Analyze the following lecture transcript and provide:
 1) A concise 3-paragraph summary (with clean Markdown subheaders if appropriate).
@@ -165,7 +197,7 @@ Format with clear markdown headers. Be educational, clear, and structured.
 Return the output strictly in valid JSON format with keys: "summary" (string containing markdown), "keyPoints" (array of 5 strings), and "examQuestions" (array of 3 strings). Keep the response in ${language} language.`;
 
       const response = await groq.chat.completions.create({
-        model: 'llama3-70b-8192',
+        model,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Here is the lecture transcript to analyze: \n\n${transcript}` }
@@ -191,13 +223,14 @@ Return the output strictly in valid JSON format with keys: "summary" (string con
 
   // --- POST /api/groq/ask (non-streaming for serverless) ---
   if (req.method === 'POST' && pathname.endsWith('/ask')) {
-    const { question, transcript, language = 'English' } = req.body;
+    const { question, transcript, language = 'English', apiKey: customKey } = req.body;
+    const clientKey = customKey || req.headers['x-groq-api-key'];
 
     if (!question || question.length < 5) {
       return res.status(400).json({ error: 'Question is too short. Ask a question with at least 5 characters.' });
     }
 
-    const groq = getGroqClient();
+    const groq = getGroqClient(clientKey);
 
     if (!groq) {
       const answer = getMockAnswer(question, transcript);
@@ -205,10 +238,11 @@ Return the output strictly in valid JSON format with keys: "summary" (string con
     }
 
     try {
+      const model = await getGroqModel(groq);
       const systemPrompt = `You are a helpful tutor for a deaf student. You have access to the lecture transcript below. Answer the student's question clearly and concisely in ${language} based on the lecture content. If the answer isn't in the transcript, say so and provide general knowledge. Keep the response educational and easy to follow.`;
 
       const response = await groq.chat.completions.create({
-        model: 'llama3-70b-8192',
+        model,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Lecture Transcript:\n${transcript}\n\nStudent's Question:\n${question}` }
@@ -227,19 +261,21 @@ Return the output strictly in valid JSON format with keys: "summary" (string con
 
   // --- POST /api/groq/analyze-chunk ---
   if (req.method === 'POST' && pathname.endsWith('/analyze-chunk')) {
-    const { chunk } = req.body;
+    const { chunk, apiKey: customKey } = req.body;
+    const clientKey = customKey || req.headers['x-groq-api-key'];
 
     if (!chunk || chunk.trim().length < 10) {
       return res.json({ type: 'normal', importance: 'low', label: '', reason: '' });
     }
 
-    const groq = getGroqClient();
+    const groq = getGroqClient(clientKey);
 
     if (!groq) {
       return res.json({ type: 'normal', importance: 'low', label: 'Mock normal', reason: 'Mock fallback' });
     }
 
     try {
+      const model = await getGroqModel(groq);
       const systemPrompt = `You are analyzing a live lecture transcript chunk for a deaf student accessibility app.
 Classify this chunk and respond ONLY with valid JSON, no markdown:
 {
@@ -251,7 +287,7 @@ Classify this chunk and respond ONLY with valid JSON, no markdown:
 If the content is just filler or transition words, use type "normal" and importance "low".`;
 
       const response = await groq.chat.completions.create({
-        model: 'llama3-70b-8192',
+        model,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: chunk }

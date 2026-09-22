@@ -45,7 +45,7 @@ export const useSettingsStore = create((set) => ({
   autoSummarize: getLocalStorage('signify-auto-summarize', false),
   captionFontSize: getLocalStorage('signify-font-size', 'lg'),
   reduceMotion: getLocalStorage('signify-reduce-motion', false),
-  groqApiKey: getLocalStorage('signify-groq-key', ''),
+  groqApiKey: getLocalStorage('signify-groq-key', import.meta.env.VITE_GROQ_API_KEY || ''),
   captionStyle: getLocalStorage('signify-caption-style', 'standard'),
   bgOpacity: Number(getLocalStorage('signify-bg-opacity', 20)),
   lineSpacing: getLocalStorage('signify-line-spacing', 'relaxed'),

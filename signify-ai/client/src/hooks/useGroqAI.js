@@ -22,10 +22,18 @@ export function useGroqAI() {
     actions.clearSummary();
 
     try {
+      const activeKey = groqApiKey || import.meta.env.VITE_GROQ_API_KEY || '';
       const response = await fetch(`${BACKEND_URL}/summarize`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript, language: targetLanguage })
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-groq-api-key': activeKey
+        },
+        body: JSON.stringify({ 
+          transcript, 
+          language: targetLanguage,
+          apiKey: activeKey
+        })
       });
 
       if (!response.ok) {
@@ -43,7 +51,7 @@ export function useGroqAI() {
       setLoadingSummary(false);
       actions.setIsSummarizing(false);
     }
-  }, [actions, targetLanguage]);
+  }, [actions, targetLanguage, groqApiKey]);
 
   return {
     generateSummary,
@@ -53,7 +61,7 @@ export function useGroqAI() {
 
 export function useAskAI() {
   const { chatHistory, isAiTyping, actions } = useLectureStore();
-  const { targetLanguage } = useSettingsStore();
+  const { targetLanguage, groqApiKey } = useSettingsStore();
 
   const askQuestion = useCallback(async (question, transcript) => {
     if (!question || question.trim().length < 5) {
@@ -74,10 +82,19 @@ export function useAskAI() {
     actions.addChatMessage({ role: 'assistant', content: '' });
 
     try {
+      const activeKey = groqApiKey || import.meta.env.VITE_GROQ_API_KEY || '';
       const response = await fetch(`${BACKEND_URL}/ask`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, transcript, language: targetLanguage })
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-groq-api-key': activeKey
+        },
+        body: JSON.stringify({ 
+          question, 
+          transcript, 
+          language: targetLanguage,
+          apiKey: activeKey
+        })
       });
 
       if (!response.ok) {
