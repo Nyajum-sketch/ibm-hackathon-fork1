@@ -141,7 +141,7 @@ export default function LiveCaptionPanel() {
             {/* Interim Partial Sentence */}
             {interimText && (
               <div className="space-y-2 pl-3">
-                <p className={`font-semibold italic tracking-wide text-text-secondary/40 select-none ${currentFontSizeClass}`}>
+                <p className={`font-semibold italic tracking-wide text-text-secondary select-none animate-pulse ${currentFontSizeClass}`}>
                   {interimText}...
                 </p>
               </div>

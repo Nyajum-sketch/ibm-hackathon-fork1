@@ -2,7 +2,32 @@ import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useCaptionStore } from '../store/useCaptionStore';
 import { useLectureStore } from '../store/useLectureStore';
+import { useSettingsStore } from '../store/useSettingsStore';
 import { dispatchCaptionFinalized } from '../addons';
+
+const BCP47_MAP = {
+  en: 'en-US',
+  es: 'es-ES',
+  ta: 'ta-IN',
+  hi: 'hi-IN',
+  fr: 'fr-FR',
+  de: 'de-DE',
+  ja: 'ja-JP',
+  ko: 'ko-KR',
+  zh: 'zh-CN',
+  ar: 'ar-SA',
+  pt: 'pt-BR',
+  it: 'it-IT',
+  ru: 'ru-RU',
+  bn: 'bn-IN',
+  te: 'te-IN',
+  mr: 'mr-IN',
+  ur: 'ur-PK',
+  vi: 'vi-VN',
+  th: 'th-TH',
+  nl: 'nl-NL',
+  tr: 'tr-TR'
+};
 
 const SAMPLE_LECTURE_TEXT = 
   "Welcome class. Today we are going to study React components and how we manage local state using hooks. " +
@@ -18,6 +43,7 @@ const SAMPLE_LECTURE_TEXT =
 
 export function useSpeechRecognition() {
   const { isListening, actions } = useCaptionStore();
+  const { targetLanguage } = useSettingsStore();
   const [isDemoMode, setIsDemoMode] = useState(false);
   const recognitionRef = useRef(null);
   const demoIntervalRef = useRef(null);
@@ -34,6 +60,36 @@ export function useSpeechRecognition() {
   const isListeningRef = useRef(false);
   const isDemoModeRef = useRef(false);
   const shouldRestartRef = useRef(false);
+  const isRecognizingRef = useRef(false);
+  const restartTimeoutRef = useRef(null);
+
+  // Start speech recognition safely
+  const startRecognition = () => {
+    if (!recognitionRef.current || isRecognizingRef.current) return;
+    try {
+      recognitionRef.current.start();
+      isRecognizingRef.current = true;
+    } catch (err) {
+      console.warn('Speech recognition start failed or already active:', err);
+      if (shouldRestartRef.current && isListeningRef.current && !isDemoModeRef.current) {
+        clearTimeout(restartTimeoutRef.current);
+        restartTimeoutRef.current = setTimeout(startRecognition, 300);
+      }
+    }
+  };
+
+  // Stop speech recognition safely
+  const stopRecognition = () => {
+    clearTimeout(restartTimeoutRef.current);
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (err) {
+        console.warn('Speech recognition stop error:', err);
+      }
+    }
+    isRecognizingRef.current = false;
+  };
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -45,10 +101,18 @@ export function useSpeechRecognition() {
     const rec = new SpeechRecognition();
     rec.continuous = true;
     rec.interimResults = true;
-    rec.lang = 'en-US';
+    
+    // Choose speech language according to settings or browser locale
+    const browserLang = typeof navigator !== 'undefined' ? navigator.language : 'en-US';
+    if (targetLanguage === 'en' && browserLang.startsWith('en')) {
+      rec.lang = browserLang;
+    } else {
+      rec.lang = BCP47_MAP[targetLanguage] || browserLang || 'en-US';
+    }
 
     rec.onstart = () => {
       console.log('Speech recognition started');
+      isRecognizingRef.current = true;
     };
 
     rec.onresult = (event) => {
@@ -56,18 +120,15 @@ export function useSpeechRecognition() {
       let final = '';
 
       for (let i = event.resultIndex; i < event.results.length; ++i) {
+        const chunk = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          final += event.results[i][0].transcript;
+          final += chunk;
         } else {
-          interim += event.results[i][0].transcript;
+          interim += chunk;
         }
       }
 
-      if (interim) {
-        actions.setInterimText(interim);
-      }
-
-      if (final) {
+      if (final.trim()) {
         actions.addFinalLine(final);
         // Non-blocking add-on caption hook
         try {
@@ -80,40 +141,58 @@ export function useSpeechRecognition() {
           // Fail silently
         }
       }
+
+      // Always set interim text so it accurately reflects active partial speech or clears
+      actions.setInterimText(interim);
     };
 
     rec.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
-      if (event.error === 'not-allowed') {
-        toast.error('Microphone access denied. Please check site permissions.');
+      console.warn('Speech recognition event/error:', event.error);
+      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+        toast.error('Microphone access denied. Please check site permissions in your browser.');
+        isRecognizingRef.current = false;
+        actions.stopSession();
+      } else if (event.error === 'audio-capture') {
+        toast.error('No microphone detected or microphone is in use by another application.');
+        isRecognizingRef.current = false;
         actions.stopSession();
       } else if (event.error === 'no-speech') {
-        // Safe to ignore, we want to keep listening
+        // Normal when user pauses speaking - onend will restart cleanly
+      } else if (event.error === 'aborted') {
+        // Normal when stopped manually
+      } else if (event.error === 'network') {
+        console.warn('Network connection to speech service interrupted, will retry.');
       } else {
-        toast.error(`Microphone error: ${event.error}`);
+        console.warn(`Speech recognition event: ${event.error}`);
       }
     };
 
     rec.onend = () => {
       console.log('Speech recognition ended');
-      // Use refs to avoid stale closure values
+      isRecognizingRef.current = false;
+      // Restart with a short delay to allow the browser's audio pipeline to reset cleanly
       if (shouldRestartRef.current && isListeningRef.current && !isDemoModeRef.current) {
-        try {
-          recognitionRef.current.start();
-        } catch (err) {
-          console.error('Failed to restart speech recognition:', err);
-        }
+        clearTimeout(restartTimeoutRef.current);
+        restartTimeoutRef.current = setTimeout(() => {
+          if (shouldRestartRef.current && isListeningRef.current && !isDemoModeRef.current) {
+            startRecognition();
+          }
+        }, 250);
       }
     };
 
     recognitionRef.current = rec;
 
     return () => {
+      clearTimeout(restartTimeoutRef.current);
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {}
       }
+      isRecognizingRef.current = false;
     };
-  }, [actions]);
+  }, [actions, targetLanguage]);
 
   // Keep refs in sync with latest state values
   useEffect(() => {
@@ -130,30 +209,23 @@ export function useSpeechRecognition() {
 
     if (isListening) {
       if (isDemoMode) {
+        stopRecognition();
         startDemoSimulation();
       } else {
         stopDemoSimulation();
-        if (recognitionRef.current) {
-          try {
-            recognitionRef.current.start();
-          } catch (err) {
-            console.error('Error starting SpeechRecognition:', err);
-          }
-        } else {
-          toast.error('Web Speech API not supported in this browser. Try Demo mode instead!');
-          actions.stopSession();
-        }
+        startRecognition();
       }
     } else {
       if (isDemoMode) {
         stopDemoSimulation();
-      } else if (recognitionRef.current) {
-        recognitionRef.current.stop();
+      } else {
+        stopRecognition();
       }
     }
 
     return () => {
       stopDemoSimulation();
+      stopRecognition();
     };
   }, [isListening, isDemoMode]);
 
@@ -295,13 +367,37 @@ export function useSpeechRecognition() {
     }
   };
 
-  const toggleListening = () => {
+  const toggleListening = async () => {
     if (isDemoMode) {
       setIsDemoMode(false);
     }
     if (isListening) {
       actions.stopSession();
     } else {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        toast.error('Web Speech API is not supported in this browser. Please use Chrome, Edge, or try Demo mode!');
+        return;
+      }
+
+      // Explicitly check & request microphone permissions
+      if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          // Release probe stream tracks so speech recognition can bind cleanly
+          stream.getTracks().forEach(track => track.stop());
+        } catch (err) {
+          console.error('Microphone permission request failed:', err);
+          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            toast.error('Microphone access denied. Please allow microphone permissions in your browser address bar.');
+            return;
+          } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+            toast.error('No microphone found on your device. Please plug in or connect a microphone.');
+            return;
+          }
+        }
+      }
+
       actions.startSession();
     }
   };
