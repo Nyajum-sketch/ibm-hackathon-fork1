@@ -12,7 +12,7 @@ import {
 import Floating3DParticles from '../ui/Floating3DParticles';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import EyeTrackingBot from './EyeTrackingBot';
-import { KineticText } from '@/registry/magicui/kinetic-text';
+import { TextAnimate } from '@/registry/magicui/text-animate';
 import { Ripple } from '@/registry/magicui/ripple';
 
 export default function InteractiveMayaHero({ onNavigate }) {
@@ -41,19 +41,22 @@ export default function InteractiveMayaHero({ onNavigate }) {
         </div>
       </div>
 
-      {/* 3. CENTERPIECE: RIPPLE & KINETIC TEXT WITH ISOLATED STATIONARY MASCOT */}
+      {/* 3. CENTERPIECE: RIPPLE & TEXT ANIMATE WITH ISOLATED STATIONARY MASCOT */}
       <div className="relative max-w-6xl mx-auto px-4 py-4 flex flex-col items-center justify-center">
         
-        {/* Ripple Background & Kinetic Text */}
+        {/* Ripple Background & Text Animate */}
         <div className="relative w-full flex items-center justify-center py-6 min-h-[220px] sm:min-h-[280px] lg:min-h-[340px]">
           {/* Animated Ripple Effect behind text */}
           <Ripple mainCircleSize={220} mainCircleOpacity={0.3} numCircles={8} />
 
-          {/* Kinetic Text "SIGNIFY AI" */}
+          {/* Text Animate "SIGNIFY AI" - Blur in by character */}
           <div className="relative z-10 flex justify-center">
-            <KineticText
-              text="SIGNIFY AI"
-              className="text-5xl sm:text-7xl md:text-8xl lg:text-[8.5rem] xl:text-[9.5rem] tracking-[-3%] uppercase font-display text-[#FBE4D8] leading-none [font-optical-sizing:auto]"
+            <TextAnimate
+              animation="blurInUp"
+              by="character"
+              once
+              as="h1"
+              className="text-5xl sm:text-7xl md:text-8xl lg:text-[8.5rem] xl:text-[9.5rem] font-black uppercase font-display text-[#FBE4D8] leading-none select-none tracking-tight text-center"
               style={{
                 textShadow: `
                   1px 1px 0px #DFB6B2,
@@ -67,7 +70,9 @@ export default function InteractiveMayaHero({ onNavigate }) {
                   14px 18px 30px rgba(0, 0, 0, 0.85)
                 `,
               }}
-            />
+            >
+              SIGNIFY AI
+            </TextAnimate>
           </div>
 
           {/* Desktop Bob: completely isolated from text motion so text expansion does not affect placement */}
