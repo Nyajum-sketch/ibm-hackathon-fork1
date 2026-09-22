@@ -12,13 +12,17 @@ import {
   History, 
   Settings, 
   ArrowUpRight,
-  Sparkles
+  Sparkles,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useCaptionStore } from '../../store/useCaptionStore';
+import { useSettingsStore } from '../../store/useSettingsStore';
 import { AddonNavbarEntry } from '../../addons';
 
 export default function Navbar() {
   const { isListening } = useCaptionStore();
+  const { theme, actions: settingsActions } = useSettingsStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -68,6 +72,15 @@ export default function Navbar() {
             {/* Teacher / Student Addon Controls */}
             <AddonNavbarEntry />
 
+            {/* Quick Theme Toggle */}
+            <button 
+              onClick={settingsActions.toggleTheme}
+              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              className="p-2 rounded-full border-2 border-[#522B5B] bg-[#2B124C] text-[#FBE4D8] hover:border-[#DFB6B2] shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 transition-all"
+            >
+              {theme === 'light' ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-[#DFB6B2]" />}
+            </button>
+
             {/* Quick Launch CTA Button */}
             <button 
               onClick={() => navigate('/classroom')}
@@ -78,8 +91,15 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Mobile menu trigger */}
+          {/* Mobile menu trigger & Theme Toggle */}
           <div className="flex md:hidden items-center gap-2">
+            <button
+              onClick={settingsActions.toggleTheme}
+              title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              className="p-2 bg-[#2B124C] text-[#FBE4D8] border-2 border-[#522B5B] rounded-xl shadow-[2px_2px_0px_#000000]"
+            >
+              {theme === 'light' ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-[#DFB6B2]" />}
+            </button>
             {isListening && (
               <span className="w-2.5 h-2.5 bg-[#6C151E] rounded-full" />
             )}

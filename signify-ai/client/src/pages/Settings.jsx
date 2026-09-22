@@ -243,14 +243,14 @@ export default function Settings() {
           <SettingRow label="Dark / Light Mode" description="Switch between dark and light interface themes">
             <button
               onClick={actions.toggleTheme}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-bold transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 text-xs font-black uppercase tracking-wider transition-all shadow-[2px_2px_0px_#000000] active:translate-x-0.5 active:translate-y-0.5 ${
                 theme === 'light'
-                  ? 'bg-amber-50 border-amber-300 text-amber-700'
-                  : 'bg-bg-elevated border-border-subtle text-text-primary'
+                  ? 'bg-amber-100 border-amber-400 text-amber-900 hover:bg-amber-200'
+                  : 'bg-[#522B5B] border-[#854F6C] text-[#FBE4D8] hover:bg-[#854F6C]'
               }`}
             >
-              {theme === 'light' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-              {theme === 'light' ? 'Light' : 'Dark'}
+              {theme === 'light' ? <Sun className="w-4 h-4 text-amber-600" /> : <Moon className="w-4 h-4 text-[#DFB6B2]" />}
+              <span>{theme === 'light' ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
           </SettingRow>
 
