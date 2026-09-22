@@ -56,10 +56,10 @@ export default function LiveCaptionPanel() {
   }, [finalTranscript, interimText, translatedLines]);
 
   return (
-    <div className="flex-1 flex flex-col bg-bg-surface border border-border-subtle rounded-xl overflow-hidden relative">
+    <div className="flex-1 min-h-0 h-full flex flex-col bg-bg-surface border border-border-subtle rounded-xl overflow-hidden relative">
       <ImportanceBadge />
       {/* Panel Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle bg-bg-surface/50 backdrop-blur-sm z-10">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle bg-bg-surface/50 backdrop-blur-sm z-10 shrink-0">
         <div className="flex items-center gap-3">
           <h2 className="font-bold text-text-primary text-base font-display">Live Captions</h2>
           {isListening && <Badge variant="live">Live</Badge>}
@@ -86,7 +86,7 @@ export default function LiveCaptionPanel() {
       {/* Caption Stream Area */}
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto p-6 md:p-8 min-h-[350px] transition-all"
+        className="flex-1 min-h-0 overflow-y-auto p-6 md:p-8 transition-all"
         style={{ backgroundColor: `rgba(0, 0, 0, ${bgOpacity / 100})` }}
       >
         {finalTranscript.length === 0 && !interimText ? (

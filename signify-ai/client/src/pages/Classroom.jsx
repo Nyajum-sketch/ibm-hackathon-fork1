@@ -205,8 +205,8 @@ export default function Classroom() {
       <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
         
         {/* Left: Live Caption Panel + ASL Grammar Bridge */}
-        <div className="lg:col-span-6 flex flex-col space-y-4">
-          <div className="flex-1 min-h-[420px] flex flex-col bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl shadow-[4px_4px_0px_#000000] overflow-hidden">
+        <div className="lg:col-span-6 flex flex-col space-y-4 min-h-0">
+          <div className="h-[480px] md:h-[520px] min-h-0 flex flex-col bg-[#2B124C] border-2 border-[#522B5B] rounded-2xl shadow-[4px_4px_0px_#000000] overflow-hidden">
             <LiveCaptionPanel />
           </div>
 
